@@ -16,11 +16,21 @@ import { Component } from '@angular/core';
         <ngx-datatable
           class='material'
           [rows]='rows'
+<<<<<<< HEAD
           [columns]="columns"
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
           [columnMode]="'force'"
           [headerHeight]="50"
           [footerHeight]="50"
           [rowHeight]="'auto'">
+<<<<<<< HEAD
+=======
+          <ngx-datatable-column 
+            *ngFor="let col of columns" 
+            [name]="col.name">
+          </ngx-datatable-column>
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
         </ngx-datatable>
       </div>
       <div class='selected-column'>

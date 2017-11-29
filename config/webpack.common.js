@@ -40,6 +40,7 @@ module.exports = function(options = {}) {
         },
         {
           test: /\.css/,
+<<<<<<< HEAD
           loaders: [
             ExtractTextPlugin.extract({
               fallbackLoader: "style-loader",
@@ -48,28 +49,58 @@ module.exports = function(options = {}) {
             'to-string-loader',
             'css-loader',
             'postcss-loader?sourceMap',
-          ]
-        },
-        {
-          test: /\.scss$/,
-          loaders: [
+=======
+          use: [
             ExtractTextPlugin.extract({
               fallbackLoader: 'style-loader',
               loader: 'css-loader'
             }),
+            { loader: 'to-string-loader' }, 
+            { loader: 'css-loader' },
+            { loader: 'postcss-loader' }
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
+          ]
+        },
+        {
+          test: /\.scss$/,
+<<<<<<< HEAD
+          loaders: [
+=======
+          use: [
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
+            ExtractTextPlugin.extract({
+              fallbackLoader: 'style-loader',
+              loader: 'css-loader'
+            }),
+<<<<<<< HEAD
             'to-string-loader',
             'css-loader',
             'postcss-loader?sourceMap',
             'sass-loader?sourceMap'
+=======
+            { loader: 'to-string-loader' }, 
+            { loader: 'css-loader' },
+            { loader: 'postcss-loader' },
+            { 
+              loader: 'sass-loader',
+              options: {
+                sourceMap: true
+              }
+            }
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
           ]
         }
       ]
     },
     plugins: [
+<<<<<<< HEAD
       new ExtractTextPlugin({
         filename: '[name].css',
         allChunks: true
       }),
+=======
+      new ExtractTextPlugin('[name].css'),
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
       new webpack.NamedModulesPlugin(),
       new webpack.DefinePlugin({
         ENV,

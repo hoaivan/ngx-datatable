@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 [{"__symbolic":"module","version":3,"metadata":{},"exports":[{"from":"./row-detail.directive"},{"from":"./row-detail-template.directive"}]},{"__symbolic":"module","version":1,"metadata":{},"exports":[{"from":"./row-detail.directive"},{"from":"./row-detail-template.directive"}]}]
+=======
+[{"__symbolic":"module","version":4,"metadata":{},"exports":[{"from":"./row-detail.directive"},{"from":"./row-detail-template.directive"}]}]
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2

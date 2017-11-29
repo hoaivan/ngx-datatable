@@ -5,10 +5,13 @@ var id_1 = require("./id");
 var column_prop_getters_1 = require("./column-prop-getters");
 /**
  * Sets the column defaults
+<<<<<<< HEAD
  *
  * @export
  * @param {any[]} columns
  * @returns
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 function setColumnDefaults(columns) {
     if (!columns)
@@ -20,16 +23,29 @@ function setColumnDefaults(columns) {
         }
         // prop can be numeric; zero is valid not a missing prop
         // translate name => prop
+<<<<<<< HEAD
         if (column.prop == null && column.name) {
+=======
+        if (isNullOrUndefined(column.prop) && column.name) {
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
             column.prop = camel_case_1.camelCase(column.name);
         }
         if (!column.$$valueGetter) {
             column.$$valueGetter = column_prop_getters_1.getterForProp(column.prop);
         }
         // format props if no name passed
+<<<<<<< HEAD
         if (column.prop != null && !column.name) {
             column.name = camel_case_1.deCamelCase(String(column.prop));
         }
+=======
+        if (!isNullOrUndefined(column.prop) && isNullOrUndefined(column.name)) {
+            column.name = camel_case_1.deCamelCase(String(column.prop));
+        }
+        if (isNullOrUndefined(column.prop) && isNullOrUndefined(column.name)) {
+            column.name = ''; // Fixes IE and Edge displaying `null`
+        }
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
         if (!column.hasOwnProperty('resizeable')) {
             column.resizeable = true;
         }
@@ -48,12 +64,21 @@ function setColumnDefaults(columns) {
     }
 }
 exports.setColumnDefaults = setColumnDefaults;
+<<<<<<< HEAD
 /**
  * Translates templates definitions to objects
  *
  * @export
  * @param {DataTableColumnDirective[]} templates
  * @returns {any[]}
+=======
+function isNullOrUndefined(value) {
+    return value === null || value === undefined;
+}
+exports.isNullOrUndefined = isNullOrUndefined;
+/**
+ * Translates templates definitions to objects
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 function translateTemplates(templates) {
     var result = [];

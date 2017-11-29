@@ -3,7 +3,11 @@ import {Observable} from "rxjs";
 import {PagedData} from "./model/paged-data";
 import {CorporateEmployee} from "./model/corporate-employee";
 import {Page} from "./model/page";
+<<<<<<< HEAD
 var companyData = require('../../assets/data/company.json');
+=======
+const companyData = require('../../assets/data/company.json');
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 
 /**
  * A server used to mock a paged data result from a server

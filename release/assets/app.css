@@ -3,11 +3,19 @@ body {
   text-align: left;
   font-style: normal;
   font-weight: 300;
+<<<<<<< HEAD
   font-size: 1.4rem;
   line-height: 2rem;
   letter-spacing: 0.01rem;
   color: #212121;
   background-color: #f5f5f5;
+=======
+  font-size: 16px;
+  line-height: 2rem;
+  letter-spacing: 0.01rem;
+  color: #212121;
+  background-color: #fafafa;
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -47,9 +55,15 @@ body {
   margin-bottom: 45px;
 }
 
+<<<<<<< HEAD
 input[type=text] {
   font-size: 18px;
   padding: 10px 10px 10px 5px;
+=======
+
+input[type=text] {
+  font-size: 14px;
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
   display: block;
   background: transparent;
   width: 100%;
@@ -57,6 +71,21 @@ input[type=text] {
   border-bottom: 1px solid #5264AE;
 }
 
+<<<<<<< HEAD
+=======
+
+textarea {
+  font-size: 14px;
+  font-family: sans-serif;
+  display: block;
+  background: transparent;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #5264AE;
+  resize: vertical;
+}
+
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 input:focus {
   outline: none;
 }
@@ -140,7 +169,11 @@ nav {
   height: 100%;
   width: 200px;
   position: absolute;
+<<<<<<< HEAD
   min-height: 1700px;
+=======
+  min-height: 1900px;
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
   font-size:14px;
   box-shadow: 0 7px 8px -4px rgba(0,0,0,.2),0 13px 19px 2px rgba(0,0,0,.14),0 5px 24px 4px rgba(0,0,0,.12);
 }
@@ -229,3 +262,66 @@ select {
 .dark nav h4 {
   color: #72809b;
 }
+<<<<<<< HEAD
+=======
+
+.expectedpayment + label:before {
+  border: 1px solid #7f83a2;
+  content: "\00a0";
+  display: inline-block;
+  font: 16px/1em sans-serif;
+  height: 16px;
+  margin: 0 .25em 0 0;
+  padding: 0;
+  vertical-align: top;
+  width: 16px;  
+}
+
+.expectedpayment2 + label:before {
+  border: 1px solid #7f83a2;
+  content: "\00a0";
+  display: inline-block;
+  font: 16px/1em sans-serif;
+  height: 16px;
+  margin: 0 .25em 0 0;
+  padding: 0;
+  vertical-align: top;
+  width: 16px;  
+}
+
+.expectedpayment3 + label:before {
+  border: 1px solid #7f83a2;
+  content: "\00a0";
+  display: inline-block;
+  font: 16px/1em sans-serif;
+  height: 16px;
+  margin: 0 .25em 0 0;
+  padding: 0;
+  vertical-align: top;
+  width: 16px;  
+}
+
+.expectedpayment:checked + label:before{
+  color: #EEE;
+  content: "\2713";
+	text-align: center;
+	font-weight: bold;
+	background-color:#66bb6a;
+}
+
+.expectedpayment2:checked + label:before{
+  color: #EEE;
+  content: "\2716";
+	text-align: center;
+	font-weight: bold;
+	background-color: #ff1744;
+}
+
+.expectedpayment3:checked + label:before {
+  color: #EEE;
+  content: "\003F";
+	text-align: center;
+	font-weight: bold;
+	background-color: #ffeb3b;
+}
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2

@@ -35,7 +35,11 @@ export class BasicAutoComponent {
   columns = [
     { prop: 'name' },
     { name: 'Gender' },
+<<<<<<< HEAD
     { name: 'Company' }
+=======
+    { name: 'Company', sortable: false }
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
   ];
 
   constructor() {

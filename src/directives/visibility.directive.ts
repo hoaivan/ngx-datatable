@@ -57,7 +57,11 @@ export class VisibilityDirective implements OnInit, OnDestroy {
       }
     };
 
+<<<<<<< HEAD
     setTimeout(() => check());
+=======
+    this.timeout = setTimeout(() => check());
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
   }
 
 }

@@ -11,9 +11,12 @@ import { Component } from '@angular/core';
             Source
           </a>
         </small>
+<<<<<<< HEAD
         <small>
           <a href="#" (click)="updateRowPosition()">Update Rows</a>
         </small>
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
       </h3>
       <div style='float:left;width:75%'>
         <div class="info">
@@ -86,6 +89,7 @@ export class SingleSelectionComponent {
     console.log('Activate Event', event);
   }
 
+<<<<<<< HEAD
   updateRowPosition() {
     const ix = this.getSelectedIx();
     const arr = [ ...this.rows ];
@@ -98,4 +102,6 @@ export class SingleSelectionComponent {
     return this.selected[0]['$$index'];
   }
 
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 }

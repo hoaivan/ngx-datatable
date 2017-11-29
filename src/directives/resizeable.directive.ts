@@ -4,7 +4,11 @@ import {
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { MouseEvent } from '../events';
+<<<<<<< HEAD
 import 'rxjs/add/operator/takeUntil';
+=======
+import { takeUntil } from 'rxjs/operators';
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 
 @Directive({
   selector: '[resizeable]',
@@ -49,7 +53,11 @@ export class ResizeableDirective implements OnDestroy, AfterViewInit {
     }
   }
 
+<<<<<<< HEAD
   @HostListener('mousedown', [ '$event' ])
+=======
+  @HostListener('mousedown', ['$event'])
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
   onMousedown(event: MouseEvent): void {
     const isHandle = (<HTMLElement>(event.target)).classList.contains('resize-handle');
     const initialWidth = this.element.clientWidth;
@@ -64,7 +72,11 @@ export class ResizeableDirective implements OnDestroy, AfterViewInit {
         .subscribe((ev: MouseEvent) => this.onMouseup());
 
       const mouseMoveSub = Observable.fromEvent(document, 'mousemove')
+<<<<<<< HEAD
         .takeUntil(mouseup)
+=======
+        .pipe(takeUntil(mouseup))
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
         .subscribe((e: MouseEvent) => this.move(e, initialWidth, mouseDownScreenX));
 
       this.subscription.add(mouseMoveSub);

@@ -5,6 +5,7 @@ if (typeof document !== 'undefined' && !document.elementsFromPoint) {
 /*tslint:disable*/
 /**
  * Polyfill for `elementsFromPoint`
+<<<<<<< HEAD
  * 
  * https://developer.mozilla.org/en-US/docs/Web/API/Document/elementsFromPoint
  * https://gist.github.com/iddan/54d5d9e58311b0495a91bf06de661380
@@ -14,6 +15,12 @@ if (typeof document !== 'undefined' && !document.elementsFromPoint) {
  * @param {any} x 
  * @param {any} y 
  * @returns 
+=======
+ *
+ * https://developer.mozilla.org/en-US/docs/Web/API/Document/elementsFromPoint
+ * https://gist.github.com/iddan/54d5d9e58311b0495a91bf06de661380
+ * https://gist.github.com/oslego/7265412
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 export function elementsFromPoint(x: number, y: number) {
   const elements = [];
@@ -46,4 +53,8 @@ export function elementsFromPoint(x: number, y: number) {
   // return our results
   return elements;
 }
+<<<<<<< HEAD
 /*tslint:enable*/
+=======
+/*tslint:enable*/
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2

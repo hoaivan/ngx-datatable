@@ -6,10 +6,13 @@ import { getterForProp } from './column-prop-getters';
 
 /**
  * Sets the column defaults
+<<<<<<< HEAD
  * 
  * @export
  * @param {any[]} columns
  * @returns
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 export function setColumnDefaults(columns: TableColumn[]) {
   if(!columns) return;
@@ -21,7 +24,11 @@ export function setColumnDefaults(columns: TableColumn[]) {
 
     // prop can be numeric; zero is valid not a missing prop
     // translate name => prop
+<<<<<<< HEAD
     if(column.prop == null && column.name) {
+=======
+    if(isNullOrUndefined(column.prop) && column.name) {
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
       column.prop = camelCase(column.name);
     }
 
@@ -30,9 +37,19 @@ export function setColumnDefaults(columns: TableColumn[]) {
     }
 
     // format props if no name passed
+<<<<<<< HEAD
     if(column.prop != null && !column.name) {
       column.name = deCamelCase(String(column.prop));
     }
+=======
+    if(!isNullOrUndefined(column.prop) && isNullOrUndefined(column.name)) {
+      column.name = deCamelCase(String(column.prop));
+    }
+    
+    if(isNullOrUndefined(column.prop) && isNullOrUndefined(column.name)) {
+      column.name = ''; // Fixes IE and Edge displaying `null`
+    }
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 
     if(!column.hasOwnProperty('resizeable')) {
       column.resizeable = true;
@@ -56,12 +73,21 @@ export function setColumnDefaults(columns: TableColumn[]) {
   }
 }
 
+<<<<<<< HEAD
 /**
  * Translates templates definitions to objects
  * 
  * @export
  * @param {DataTableColumnDirective[]} templates
  * @returns {any[]}
+=======
+export function isNullOrUndefined<T>(value: T | null | undefined): value is null | undefined {
+    return value === null || value === undefined;
+}
+
+/**
+ * Translates templates definitions to objects
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 export function translateTemplates(templates: DataTableColumnDirective[]): any[] {
   const result: any[] = [];

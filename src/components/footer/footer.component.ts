@@ -10,7 +10,11 @@ import { Component, Output, EventEmitter, ChangeDetectionStrategy, Input, Templa
       <ng-template
         *ngIf="footerTemplate"
         [ngTemplateOutlet]="footerTemplate.template"
+<<<<<<< HEAD
         [ngOutletContext]="{ 
+=======
+        [ngTemplateOutletContext]="{ 
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
           rowCount: rowCount, 
           pageSize: pageSize, 
           selectedCount: selectedCount,
@@ -20,9 +24,15 @@ import { Component, Output, EventEmitter, ChangeDetectionStrategy, Input, Templa
       </ng-template>
       <div class="page-count" *ngIf="!footerTemplate">
         <span *ngIf="selectedMessage">
+<<<<<<< HEAD
           {{selectedMessage}} /
         </span>
             {{totalMessage}}
+=======
+          {{selectedCount.toLocaleString()}} {{selectedMessage}} / 
+        </span>
+        {{rowCount.toLocaleString()}} {{totalMessage}}
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
       </div>
       <datatable-pager *ngIf="!footerTemplate"
         [pagerLeftArrowIcon]="pagerLeftArrowIcon"

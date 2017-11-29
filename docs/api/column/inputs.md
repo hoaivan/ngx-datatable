@@ -23,8 +23,18 @@ The width of the column by default in pixels. Default value: `150`
 The column can be resized manually by the user. Default value: `true`
 
 ### `comparator`
+<<<<<<< HEAD
 Custom sort comparator, used to apply custom sorting via client-side. See 
 [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort) for more info.
+=======
+Custom sort comparator, used to apply custom sorting via client-side.
+Function receives five parameters, namely values and rows of items to be sorted as well as direction of the sort ('asc'|'desc'):
+```
+(valueA, valueB, rowA, rowB, sortDirection) => -1|0|1
+```
+NOTE: Compare can be a standard JS comparison function (a,b) => -1|0|1 as additional parameters are silently ignored.
+See [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort) for more info.
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 
 ### `sortable`: `boolean`
 Sorting of the row values by this column. Default value: `true`
@@ -49,8 +59,25 @@ applicable when the selection mode is `checkbox`.
 Indicates whether the column should show a checkbox component in the header cell.
 Only applicable when the selection mode is `checkbox`.
 
+<<<<<<< HEAD
 ## `headerClass`: `string|Function`
 Header CSS classes to apply to the header cell
 
 ## `cellClass`: `string|Function`
 Cell classes to apply to the body cell
+=======
+### `headerClass`: `string|Function`
+Header CSS classes to apply to the header cell
+
+### `cellClass`: `string|Function`
+Cell classes to apply to the body cell
+
+### `frozenLeft`: `boolean`
+Determines if the column is frozen to the left. Default value: `false`
+
+### `frozenRight`: `boolean`
+Determines if the column is frozen to the right. Default value: `false`
+
+### `pipe`: `PipeTransform`
+Custom pipe transforms. Default value: `undefined`
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2

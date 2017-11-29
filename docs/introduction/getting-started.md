@@ -48,7 +48,11 @@ export class AppComponent {
 }
 ```
 
+<<<<<<< HEAD
 and your off to the races! 
+=======
+and you're off to the races! 
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 
 For more examples, visit the 
 [demos](https://github.com/swimlane/angular2-data-table/tree/master/demo) directory

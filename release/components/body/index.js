@@ -10,4 +10,9 @@ __export(require("./progress-bar.component"));
 __export(require("./scroller.component"));
 __export(require("./body-row-wrapper.component"));
 __export(require("./selection.component"));
+<<<<<<< HEAD
+=======
+__export(require("./body-group-header.directive"));
+__export(require("./body-group-header-template.directive"));
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 //# sourceMappingURL=index.js.map

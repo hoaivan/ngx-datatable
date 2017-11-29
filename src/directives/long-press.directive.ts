@@ -4,8 +4,14 @@ import {
 } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
+<<<<<<< HEAD
 import 'rxjs/add/operator/takeUntil';
 import { MouseEvent } from './../events';
+=======
+import { takeUntil } from 'rxjs/operators';
+
+import { MouseEvent } from '../events';
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 
 @Directive({ selector: '[long-press]' })
 export class LongPressDirective implements OnDestroy {
@@ -34,6 +40,7 @@ export class LongPressDirective implements OnDestroy {
     return this.isLongPressing;
   }
 
+<<<<<<< HEAD
   @HostListener('mousedown', [ '$event' ])
   onMouseDown(event: MouseEvent): void {
     // don't do right/middle clicks
@@ -42,6 +49,16 @@ export class LongPressDirective implements OnDestroy {
     // don't start drag if its on resize handle
     const target = (<HTMLElement>event.target);
     if(target.classList.contains('resize-handle')) return;
+=======
+  @HostListener('mousedown', ['$event'])
+  onMouseDown(event: MouseEvent): void {
+    // don't do right/middle clicks
+    if (event.which !== 1 || !this.pressEnabled) return;
+
+    // don't start drag if its on resize handle
+    const target = (<HTMLElement>event.target);
+    if (target.classList.contains('resize-handle')) return;
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 
     this.mouseX = event.clientX;
     this.mouseY = event.clientY;
@@ -61,7 +78,11 @@ export class LongPressDirective implements OnDestroy {
 
       this.subscription.add(
         Observable.fromEvent(document, 'mousemove')
+<<<<<<< HEAD
           .takeUntil(mouseup)
+=======
+          .pipe(takeUntil(mouseup))
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
           .subscribe((mouseEvent: MouseEvent) => this.onMouseMove(mouseEvent))
       );
 
@@ -82,7 +103,11 @@ export class LongPressDirective implements OnDestroy {
     }
   }
 
+<<<<<<< HEAD
   loop(event: Event): void {
+=======
+  loop(event: MouseEvent): void {
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
     if (this.isLongPressing) {
       this.timeout = setTimeout(() => {
         this.longPressing.emit({

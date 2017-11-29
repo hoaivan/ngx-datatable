@@ -1,11 +1,14 @@
 /**
  * Throttle a function
+<<<<<<< HEAD
  * 
  * @export
  * @param {*} func
  * @param {number} wait
  * @param {*} [options]
  * @returns
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 export function throttle(func: any, wait: number, options?: any) {
   options = options || {};
@@ -21,7 +24,11 @@ export function throttle(func: any, wait: number, options?: any) {
     result = func.apply(context, args);
   }
 
+<<<<<<< HEAD
   return function() {
+=======
+  return function(this: any) {
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
     const now = +new Date();
 
     if (!previous && options.leading === false) {
@@ -52,11 +59,14 @@ export function throttle(func: any, wait: number, options?: any) {
  *    throttleable(10)
  *    myFn() { ... }
  *  }
+<<<<<<< HEAD
  * 
  * @export
  * @param {number} duration
  * @param {*} [options]
  * @returns
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 export function throttleable(duration: number, options?: any) {
   return function innerDecorator(target: any, key: PropertyKey, descriptor: PropertyDescriptor) {

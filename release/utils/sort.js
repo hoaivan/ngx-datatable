@@ -4,9 +4,12 @@ var types_1 = require("../types");
 var column_prop_getters_1 = require("./column-prop-getters");
 /**
  * Gets the next sort direction
+<<<<<<< HEAD
  * @param  {SortType}      sortType
  * @param  {SortDirection} currentSort
  * @return {SortDirection}
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 function nextSortDir(sortType, current) {
     if (sortType === types_1.SortType.single) {
@@ -27,15 +30,23 @@ function nextSortDir(sortType, current) {
         else if (current === types_1.SortDirection.desc) {
             return undefined;
         }
+<<<<<<< HEAD
+=======
+        // avoid TS7030: Not all code paths return a value.
+        return undefined;
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
     }
 }
 exports.nextSortDir = nextSortDir;
 /**
  * Adapted from fueld-ui on 6/216
  * https://github.com/FuelInteractive/fuel-ui/tree/master/src/pipes/OrderBy
+<<<<<<< HEAD
  * @param  {any}    a
  * @param  {any}    b
  * @return {number} position
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 function orderByComparator(a, b) {
     if (a === null || typeof a === 'undefined')
@@ -71,6 +82,7 @@ function orderByComparator(a, b) {
 exports.orderByComparator = orderByComparator;
 /**
  * Sorts the rows
+<<<<<<< HEAD
  *
  * @export
  * @param {any[]} rows
@@ -81,6 +93,19 @@ exports.orderByComparator = orderByComparator;
 function sortRows(rows, columns, dirs) {
     if (!rows || !dirs || !dirs.length || !columns)
         return rows;
+=======
+ */
+function sortRows(rows, columns, dirs) {
+    if (!rows)
+        return [];
+    if (!dirs || !dirs.length || !columns)
+        return rows.slice();
+    /**
+     * create a mapping from each row to its row index prior to sorting
+     */
+    var rowToIndexMap = new Map();
+    rows.forEach(function (row, index) { return rowToIndexMap.set(row, index); });
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
     var temp = rows.slice();
     var cols = columns.reduce(function (obj, col) {
         if (col.comparator && typeof col.comparator === 'function') {
@@ -99,6 +124,7 @@ function sortRows(rows, columns, dirs) {
             compareFn: cols[prop] || orderByComparator
         };
     });
+<<<<<<< HEAD
     return temp.sort(function (a, b) {
         for (var _i = 0, cachedDirs_1 = cachedDirs; _i < cachedDirs_1.length; _i++) {
             var cachedDir = cachedDirs_1[_i];
@@ -108,12 +134,39 @@ function sortRows(rows, columns, dirs) {
             var comparison = cachedDir.dir !== types_1.SortDirection.desc ?
                 cachedDir.compareFn(propA, propB) :
                 -cachedDir.compareFn(propA, propB);
+=======
+    return temp.sort(function (rowA, rowB) {
+        for (var _i = 0, cachedDirs_1 = cachedDirs; _i < cachedDirs_1.length; _i++) {
+            var cachedDir = cachedDirs_1[_i];
+            // Get property and valuegetters for column to be sorted
+            var prop = cachedDir.prop, valueGetter = cachedDir.valueGetter;
+            // Get A and B cell values from rows based on properties of the columns
+            var propA = valueGetter(rowA, prop);
+            var propB = valueGetter(rowB, prop);
+            // Compare function gets five parameters:
+            // Two cell values to be compared as propA and propB
+            // Two rows corresponding to the cells as rowA and rowB
+            // Direction of the sort for this column as SortDirection
+            // Compare can be a standard JS comparison function (a,b) => -1|0|1
+            // as additional parameters are silently ignored. The whole row and sort
+            // direction enable more complex sort logic.
+            var comparison = cachedDir.dir !== types_1.SortDirection.desc ?
+                cachedDir.compareFn(propA, propB, rowA, rowB, cachedDir.dir) :
+                -cachedDir.compareFn(propA, propB, rowA, rowB, cachedDir.dir);
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
             // Don't return 0 yet in case of needing to sort by next property
             if (comparison !== 0)
                 return comparison;
         }
+<<<<<<< HEAD
         // equal each other
         return 0;
+=======
+        /**
+         * all else being equal, preserve original order of the rows (stable sort)
+         */
+        return rowToIndexMap.get(rowA) < rowToIndexMap.get(rowB) ? -1 : 1;
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
     });
 }
 exports.sortRows = sortRows;

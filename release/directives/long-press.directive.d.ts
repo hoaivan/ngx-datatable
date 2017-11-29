@@ -1,6 +1,9 @@
 import { EventEmitter, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
+<<<<<<< HEAD
 import 'rxjs/add/operator/takeUntil';
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 export declare class LongPressDirective implements OnDestroy {
     pressEnabled: boolean;
     pressModel: any;
@@ -18,7 +21,11 @@ export declare class LongPressDirective implements OnDestroy {
     readonly isLongPress: boolean;
     onMouseDown(event: MouseEvent): void;
     onMouseMove(event: MouseEvent): void;
+<<<<<<< HEAD
     loop(event: Event): void;
+=======
+    loop(event: MouseEvent): void;
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
     endPress(): void;
     onMouseup(): void;
     ngOnDestroy(): void;

@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"version":3,"sources":["../../build/directives/index.ts"],"names":[],"mappings":";;;;;AAAA,2CAAsC;AACtC,4CAAuC;AACvC,2CAAsC;AACtC,4CAAuC;AACvC,4CAAuC","file":"index.js","sourceRoot":""}
+=======
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../build/directives/index.ts"],"names":[],"mappings":";;;;;AAAA,2CAAsC;AACtC,4CAAuC;AACvC,2CAAsC;AACtC,4CAAuC;AACvC,4CAAuC"}
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2

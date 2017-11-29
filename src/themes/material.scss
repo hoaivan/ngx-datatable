@@ -1,8 +1,12 @@
 .ngx-datatable.material {
 	background:#FFF;
+<<<<<<< HEAD
   -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
   -moz-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
+=======
+  box-shadow: 0 5px 5px -3px rgba(0,0,0,.2), 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12);
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 
 	&.striped {
 		.datatable-row-odd {
@@ -132,10 +136,19 @@
 
     .datatable-header-cell {
       text-align: left;
+<<<<<<< HEAD
       padding: .5rem 1.2rem;
       font-weight: 400;
       color: #757575;
       vertical-align: bottom;
+=======
+      padding: .9rem 1.2rem;
+      font-weight: 400;
+      color: rgba(0,0,0,.54);
+      vertical-align: bottom;
+      font-size: 12px;
+      font-weight: 500;
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 
       .datatable-header-cell-wrapper {
         position: relative;
@@ -185,23 +198,57 @@
 		.datatable-row-detail {
 			background: #f5f5f5;
 			padding: 10px;
+<<<<<<< HEAD
 		}
+=======
+    }
+    
+    .datatable-group-header {
+      background: #f5f5f5;
+      border-bottom: solid 1px #D9D8D9;
+      border-top: solid 1px #D9D8D9;
+    }
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 
 	  .datatable-body-row {
 	    .datatable-body-cell {
 	      text-align: left;
+<<<<<<< HEAD
 	      padding: .5rem 1.2rem;
 	      vertical-align: top;
 	      border-top: 0;
 
 	      -webkit-transition: width 0.3s ease;
 	      transition: width 0.3s ease;
+=======
+	      padding: .9rem 1.2rem;
+	      vertical-align: top;
+	      border-top: 0;
+        color: rgba(0,0,0,.87);
+	      transition: width 0.3s ease;
+        font-size: 14px;
+        font-weight: 400;
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 
         // cell active class
         // &.active {
         //  background: #0829e0
         // }
+<<<<<<< HEAD
 	    }
+=======
+			}
+	    .datatable-body-group-cell {
+	      text-align: left;
+	      padding: .9rem 1.2rem;
+	      vertical-align: top;
+	      border-top: 0;
+        color: rgba(0,0,0,.87);
+	      transition: width 0.3s ease;
+        font-size: 14px;
+        font-weight: 400;
+	    }					
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 	  }
 
 		.progress-linear {
@@ -248,7 +295,13 @@
 	 */
 	.datatable-footer {
 		border-top: 1px solid rgba(0, 0, 0, 0.12);
+<<<<<<< HEAD
 		font-size:16px;
+=======
+		font-size: 12px;
+    font-weight: 400;
+    color: rgba(0,0,0,.54);
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 
 		.page-count{
 			line-height: 50px;
@@ -258,17 +311,28 @@
 
 		.datatable-pager {
 			margin: 0 10px;
+<<<<<<< HEAD
 	    //line-height: 50px;
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 
 			li {
 	    	vertical-align: middle;
 
+<<<<<<< HEAD
 				&.disabled a{
+=======
+				&.disabled a {
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 					color:rgba(0, 0, 0, 0.26) !important;
 					background-color: transparent !important;
 				}
 
+<<<<<<< HEAD
 				&.active a{
+=======
+				&.active a {
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 					background-color: rgba(158,158,158,0.2);
 					font-weight: bold;
 				}
@@ -287,7 +351,11 @@
 				text-decoration: none;
 		    vertical-align: bottom;
 
+<<<<<<< HEAD
 				&:hover{
+=======
+				&:hover {
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 					color: rgba(0,0,0,.75);
 					background-color: rgba(158,158,158,0.2);
 				}
@@ -315,7 +383,11 @@
   vertical-align: middle;
   display: inline-block;
   box-sizing: border-box;
+<<<<<<< HEAD
   padding: 10px 0;
+=======
+  padding: 0;
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 
   input[type='checkbox'] {
     position: relative;

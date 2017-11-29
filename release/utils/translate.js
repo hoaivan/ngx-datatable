@@ -7,7 +7,11 @@ var transform = typeof window !== 'undefined' ? prefixes_1.getVendorPrefixedName
 var backfaceVisibility = typeof window !== 'undefined' ? prefixes_1.getVendorPrefixedName('backfaceVisibility') : undefined;
 var hasCSSTransforms = typeof window !== 'undefined' ? !!prefixes_1.getVendorPrefixedName('transform') : undefined;
 var hasCSS3DTransforms = typeof window !== 'undefined' ? !!prefixes_1.getVendorPrefixedName('perspective') : undefined;
+<<<<<<< HEAD
 var ua = typeof window !== 'undefined' ? window.navigator.userAgent : "Chrome";
+=======
+var ua = typeof window !== 'undefined' ? window.navigator.userAgent : 'Chrome';
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 var isSafari = (/Safari\//).test(ua) && !(/Chrome\//).test(ua);
 function translateXY(styles, x, y) {
     if (typeof transform !== 'undefined' && hasCSSTransforms) {
