@@ -1,6 +1,9 @@
 /**
  * Returns the columns by pin.
+<<<<<<< HEAD
  * @param {array} cols
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 export function columnsByPin(cols: any[]) {
   const ret: {left: any, center: any, right: any} = {
@@ -26,22 +29,32 @@ export function columnsByPin(cols: any[]) {
 
 /**
  * Returns the widths of all group sets of a column
+<<<<<<< HEAD
  * @param {object} groups
  * @param {array} all
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 export function columnGroupWidths(groups: any, all: any) {
   return {
     left: columnTotalWidth(groups.left),
     center: columnTotalWidth(groups.center),
     right: columnTotalWidth(groups.right),
+<<<<<<< HEAD
     total: columnTotalWidth(all)
+=======
+    total: Math.floor(columnTotalWidth(all))
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
   };
 }
 
 /**
  * Calculates the total width of all columns and their groups
+<<<<<<< HEAD
  * @param {array} columns
  * @param {string} prop width to get
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 export function columnTotalWidth(columns: any[], prop?: string) {
   let totalWidth = 0;
@@ -59,8 +72,11 @@ export function columnTotalWidth(columns: any[], prop?: string) {
 
 /**
  * Calculates the total width of all columns and their groups
+<<<<<<< HEAD
  * @param {array} columns
  * @param {string} property width to get
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 export function columnsTotalWidth(columns: any, prop?: any) {
   let totalWidth = 0;
@@ -83,3 +99,18 @@ export function columnsByPinArr(val: any) {
 
   return colsByPinArr;
 }
+<<<<<<< HEAD
+=======
+
+export function allColumnsByPinArr(val: any) {
+  const colsByPinArr = [];
+  const colsByPin = columnsByPin(val);
+  const colsTest = [];
+
+  colsByPinArr.push({ type: 'left', columns: colsByPin['left'] });
+  colsByPinArr.push({ type: 'center', columns: colsByPin['center'] });
+  colsByPinArr.push({ type: 'right', columns: colsByPin['right'] });
+
+  return colsByPinArr;
+}
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2

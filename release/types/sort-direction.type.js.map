@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"version":3,"sources":["../../build/types/sort-direction.type.ts"],"names":[],"mappings":";;AAAA,IAAY,aAGX;AAHD,WAAY,aAAa;IACvB,qCAAM,KAAY,SAAA,CAAA;IAClB,sCAAO,MAAa,UAAA,CAAA;AACtB,CAAC,EAHW,aAAa,GAAb,qBAAa,KAAb,qBAAa,QAGxB","file":"sort-direction.type.js","sourceRoot":""}
+=======
+{"version":3,"file":"sort-direction.type.js","sourceRoot":"","sources":["../../build/types/sort-direction.type.ts"],"names":[],"mappings":";;AAAA,IAAY,aAGX;AAHD,WAAY,aAAa;IACvB,4BAAW,CAAA;IACX,8BAAa,CAAA;AACf,CAAC,EAHW,aAAa,GAAb,qBAAa,KAAb,qBAAa,QAGxB"}
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2

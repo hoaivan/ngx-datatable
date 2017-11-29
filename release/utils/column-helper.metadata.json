@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 [{"__symbolic":"module","version":3,"metadata":{"setColumnDefaults":{"__symbolic":"function"},"translateTemplates":{"__symbolic":"function"}}},{"__symbolic":"module","version":1,"metadata":{"setColumnDefaults":{"__symbolic":"function"},"translateTemplates":{"__symbolic":"function"}}}]
+=======
+[{"__symbolic":"module","version":4,"metadata":{"setColumnDefaults":{"__symbolic":"function"},"isNullOrUndefined":{"__symbolic":"function","parameters":["value"],"value":{"__symbolic":"binop","operator":"||","left":{"__symbolic":"binop","operator":"===","left":{"__symbolic":"reference","name":"value"},"right":null},"right":{"__symbolic":"binop","operator":"===","left":{"__symbolic":"reference","name":"value"},"right":{"__symbolic":"reference","name":"undefined"}}}},"translateTemplates":{"__symbolic":"function"}}}]
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2

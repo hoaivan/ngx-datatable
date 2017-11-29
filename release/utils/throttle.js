@@ -2,12 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Throttle a function
+<<<<<<< HEAD
  *
  * @export
  * @param {*} func
  * @param {number} wait
  * @param {*} [options]
  * @returns
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 function throttle(func, wait, options) {
     options = options || {};
@@ -49,11 +52,14 @@ exports.throttle = throttle;
  *    throttleable(10)
  *    myFn() { ... }
  *  }
+<<<<<<< HEAD
  *
  * @export
  * @param {number} duration
  * @param {*} [options]
  * @returns
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 function throttleable(duration, options) {
     return function innerDecorator(target, key, descriptor) {

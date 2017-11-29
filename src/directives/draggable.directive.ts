@@ -3,7 +3,11 @@ import {
 } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
+<<<<<<< HEAD
 import 'rxjs/add/operator/takeUntil';
+=======
+import { takeUntil } from 'rxjs/operators';
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 import { MouseEvent } from '../events';
 
 /**
@@ -35,7 +39,11 @@ export class DraggableDirective implements OnDestroy, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+<<<<<<< HEAD
     if(changes['dragEventTarget'] && changes['dragEventTarget'].currentValue && this.dragModel.dragging) {
+=======
+    if (changes['dragEventTarget'] && changes['dragEventTarget'].currentValue && this.dragModel.dragging) {
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
       this.onMousedown(changes['dragEventTarget'].currentValue);
     }
   }
@@ -63,8 +71,13 @@ export class DraggableDirective implements OnDestroy, OnChanges {
   onMousedown(event: MouseEvent): void {
     // we only want to drag the inner header text
     const isDragElm = (<HTMLElement>event.target).classList.contains('draggable');
+<<<<<<< HEAD
     
     if(isDragElm && (this.dragX || this.dragY)) {
+=======
+
+    if (isDragElm && (this.dragX || this.dragY)) {
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
       event.preventDefault();
       this.isDragging = true;
 
@@ -75,7 +88,11 @@ export class DraggableDirective implements OnDestroy, OnChanges {
         .subscribe((ev: MouseEvent) => this.onMouseup(ev));
 
       const mouseMoveSub = Observable.fromEvent(document, 'mousemove')
+<<<<<<< HEAD
         .takeUntil(mouseup)
+=======
+        .pipe(takeUntil(mouseup))
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
         .subscribe((ev: MouseEvent) => this.move(ev, mouseDownPos));
 
       this.subscription.add(mouseMoveSub);

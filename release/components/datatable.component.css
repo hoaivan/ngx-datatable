@@ -55,7 +55,16 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis; }
+<<<<<<< HEAD
   .ngx-datatable .datatable-body-row,
+=======
+      .ngx-datatable.fixed-row .datatable-scroll .datatable-body-row .datatable-body-group-cell {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis; }
+  .ngx-datatable .datatable-body-row,
+  .ngx-datatable .datatable-row-center,
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
   .ngx-datatable .datatable-header-inner {
     display: -webkit-box;
     display: -moz-box;
@@ -70,6 +79,7 @@
     flex-flow: row; }
   .ngx-datatable .datatable-body-cell,
   .ngx-datatable .datatable-header-cell {
+<<<<<<< HEAD
     vertical-align: top;
     display: inline-block;
     line-height: 1.625;
@@ -78,6 +88,12 @@
     -ms-user-select: none;
     -o-user-select: none;
     user-select: none; }
+=======
+    overflow-x: hidden;
+    vertical-align: top;
+    display: inline-block;
+    line-height: 1.625; }
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
     .ngx-datatable .datatable-body-cell:focus,
     .ngx-datatable .datatable-header-cell:focus {
       outline: none; }
@@ -86,6 +102,10 @@
     z-index: 9; }
   .ngx-datatable .datatable-row-left,
   .ngx-datatable .datatable-row-center,
+<<<<<<< HEAD
+=======
+  .ngx-datatable .datatable-row-group,
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
   .ngx-datatable .datatable-row-right {
     position: relative; }
   .ngx-datatable .datatable-header {
@@ -97,7 +117,11 @@
     .ngx-datatable .datatable-header .datatable-header-cell {
       position: relative;
       display: inline-block; }
+<<<<<<< HEAD
       .ngx-datatable .datatable-header .datatable-header-cell .datatable-header-cell-wrapper {
+=======
+      .ngx-datatable .datatable-header .datatable-header-cell.sortable .datatable-header-cell-wrapper {
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
         cursor: pointer; }
       .ngx-datatable .datatable-header .datatable-header-cell.longpress .datatable-header-cell-wrapper {
         cursor: move; }

@@ -236,14 +236,22 @@ describe('DataTablePagerComponent', () => {
       expect(pages[2].number).toEqual(3);
     });
 
+<<<<<<< HEAD
     it('should return array containing specified page', () => {
+=======
+    xit('should return array containing specified page', () => {
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
       const pages = pager.calcPages(6);
       expect(pages.length).toEqual(3);
       expect(pages[0].number).toEqual(6);
       expect(pages[2].number).toEqual(8);
     });
 
+<<<<<<< HEAD
     it('should use current page if no page is specified', () => {
+=======
+    xit('should use current page if no page is specified', () => {
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
       pager.page = 7;
       const pages = pager.calcPages();
       expect(pages.length).toEqual(3);
@@ -251,7 +259,11 @@ describe('DataTablePagerComponent', () => {
       expect(pages[2].number).toEqual(8);
     });
 
+<<<<<<< HEAD
     it('should return empty array if specified page does not exist', () => {
+=======
+    xit('should return empty array if specified page does not exist', () => {
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
       const pages = pager.calcPages(16);
       expect(pages.length).toEqual(0);
     });

@@ -42,7 +42,11 @@ export class MultipleTablesComponent {
   ];
 
   columns2 = [
+<<<<<<< HEAD
     { prop: 'name', Name: '^^NAME^^' },
+=======
+    { prop: 'name', name: 'Name' },
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
     { name: 'Gender' }
   ];
 

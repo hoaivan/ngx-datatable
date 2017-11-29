@@ -3,7 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var column_1 = require("./column");
 /**
  * Calculates the Total Flex Grow
+<<<<<<< HEAD
  * @param {array}
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 function getTotalFlexGrow(columns) {
     var totalFlexGrow = 0;
@@ -17,8 +20,11 @@ exports.getTotalFlexGrow = getTotalFlexGrow;
 /**
  * Adjusts the column widths.
  * Inspired by: https://github.com/facebook/fixed-data-table/blob/master/src/FixedDataTableWidthHelper.js
+<<<<<<< HEAD
  * @param {array} all columns
  * @param {int} width
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 function adjustColumnWidths(allColumns, expectedWidth) {
     var columnsWidth = column_1.columnsTotalWidth(allColumns);
@@ -31,9 +37,12 @@ function adjustColumnWidths(allColumns, expectedWidth) {
 exports.adjustColumnWidths = adjustColumnWidths;
 /**
  * Resizes columns based on the flexGrow property, while respecting manually set widths
+<<<<<<< HEAD
  * @param {array} colsByGroup
  * @param {int} maxWidth
  * @param {int} totalFlexGrow
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 function scaleColumns(colsByGroup, maxWidth, totalFlexGrow) {
     // calculate total width and flexgrow points for coulumns that can be resized
@@ -92,12 +101,15 @@ function scaleColumns(colsByGroup, maxWidth, totalFlexGrow) {
  *
  *  - If the grid starts off small but then becomes greater than the size ( + / - )
  *    the width should use the original width; not the newly proportioned widths.
+<<<<<<< HEAD
  *
  * @param {array} allColumns
  * @param {int} expectedWidth
  * @param {int} startIdx
  * @param {boolean} allowBleed
  * @param {int} defaultColWidth
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 function forceFillColumnWidths(allColumns, expectedWidth, startIdx, allowBleed, defaultColWidth) {
     if (defaultColWidth === void 0) { defaultColWidth = 300; }
@@ -150,9 +162,12 @@ function forceFillColumnWidths(allColumns, expectedWidth, startIdx, allowBleed, 
 exports.forceFillColumnWidths = forceFillColumnWidths;
 /**
  * Remove the processed columns from the current active columns.
+<<<<<<< HEAD
  *
  * @param columnsToResize  Array containing the columns that need to be resized.
  * @param columnsProcessed Array containing the columns that have already been processed.
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 function removeProcessedColumns(columnsToResize, columnsProcessed) {
     for (var _i = 0, columnsProcessed_1 = columnsProcessed; _i < columnsProcessed_1.length; _i++) {
@@ -163,10 +178,13 @@ function removeProcessedColumns(columnsToResize, columnsProcessed) {
 }
 /**
  * Gets the width of the columns
+<<<<<<< HEAD
  *
  * @param {array} allColumns
  * @param {number} [defaultColWidth=300]
  * @returns {number}
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
  */
 function getContentWidth(allColumns, defaultColWidth) {
     if (defaultColWidth === void 0) { defaultColWidth = 300; }

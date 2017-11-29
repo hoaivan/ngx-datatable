@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 ngx-datatable {
   height: calc(100vh - 110px);
 }
 
 ngx-datatable .progress-linear {
+=======
+.server-scrolling-demo {
+  height: calc(100vh - 110px);
+}
+
+.server-scrolling-demo .progress-linear {
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
   position: fixed !important;
   bottom: 0px;
 }

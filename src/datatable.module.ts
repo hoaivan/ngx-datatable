@@ -10,18 +10,31 @@ import {
   DataTableFooterComponent,
   DataTableHeaderCellComponent,
   DataTablePagerComponent,
+<<<<<<< HEAD
   DataTableBodyRowComponent,
+=======
+  DataTableBodyRowComponent,  
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
   DataTableRowWrapperComponent,
   ProgressBarComponent,
   DataTableBodyCellComponent,
   DatatableRowDetailDirective,
+<<<<<<< HEAD
+=======
+  DatatableGroupHeaderDirective,
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
   ScrollerComponent,
   DataTableSelectionComponent,
   DataTableColumnHeaderDirective,
   DataTableColumnCellDirective,
   DatatableRowDetailTemplateDirective,
   DataTableFooterTemplateDirective,
+<<<<<<< HEAD
   DatatableFooterDirective
+=======
+  DatatableFooterDirective,
+  DatatableGroupHeaderTemplateDirective
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 } from './components';
 
 import {
@@ -56,27 +69,49 @@ import { ScrollbarHelper } from './services';
     DataTableBodyComponent,
     DataTableFooterComponent,
     DataTablePagerComponent,
+<<<<<<< HEAD
     ProgressBarComponent,
     DataTableBodyRowComponent,
     DataTableRowWrapperComponent,
     DatatableRowDetailDirective,
+=======
+    ProgressBarComponent,    
+    DataTableBodyRowComponent,
+    DataTableRowWrapperComponent,
+    DatatableRowDetailDirective,
+    DatatableGroupHeaderDirective,
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
     DatatableRowDetailTemplateDirective,
     DataTableBodyCellComponent,
     DataTableSelectionComponent,
     DataTableColumnHeaderDirective,
     DataTableColumnCellDirective,
+<<<<<<< HEAD
     DatatableFooterDirective
+=======
+    DatatableFooterDirective,
+    DatatableGroupHeaderTemplateDirective
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
   ],
   exports: [
     DatatableComponent,
     DatatableRowDetailDirective,
+<<<<<<< HEAD
+=======
+    DatatableGroupHeaderDirective,
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
     DatatableRowDetailTemplateDirective,
     DataTableColumnDirective,
     DataTableColumnHeaderDirective,
     DataTableColumnCellDirective,
     DataTableFooterTemplateDirective,
     DatatableFooterDirective,
+<<<<<<< HEAD
     DataTablePagerComponent
+=======
+    DataTablePagerComponent,
+    DatatableGroupHeaderTemplateDirective
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
   ]
 })
 export class NgxDatatableModule { }

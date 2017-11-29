@@ -7,14 +7,24 @@ import { Component } from '@angular/core';
       <h3>
         Custom Checkbox Selection
         <small>
+<<<<<<< HEAD
           <a href="https://github.com/swimlane/ngx-datatable/blob/master/demo/selection/selection-chkbox.component.ts" target="_blank">
+=======
+          <a href="https://github.com/swimlane/ngx-datatable/blob/master/demo/selection/selection-chkbox-template.component.ts" target="_blank">
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
             Source
           </a>
         </small>
         <small>
+<<<<<<< HEAD
           <a href="#" (click)="add()">Add</a> |
           <a href="#" (click)="update()">Update</a> |
           <a href="#" (click)="remove()">Remove</a> 
+=======
+          <a href="javascript:void(0)" (click)="add()">Add</a> |
+          <a href="javascript:void(0)" (click)="update()">Update</a> |
+          <a href="javascript:void(0)" (click)="remove()">Remove</a> 
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
         </small>
       </h3>
       <div style='float:left;width:75%'>
@@ -33,7 +43,11 @@ import { Component } from '@angular/core';
           (select)='onSelect($event)'>
           <ngx-datatable-column [width]="30" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
               <ng-template ngx-datatable-header-template let-value="value" let-allRowsSelected="allRowsSelected" let-selectFn="selectFn">
+<<<<<<< HEAD
                 <input type="checkbox" [attr.checked]="allRowsSelected" (change)="selectFn(!allRowsSelected)"/>
+=======
+                <input type="checkbox" [checked]="allRowsSelected" (change)="selectFn(!allRowsSelected)"/>
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
               </ng-template>
               <ng-template ngx-datatable-cell-template let-value="value" let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
                 <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)"/>

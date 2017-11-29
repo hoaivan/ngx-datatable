@@ -12,9 +12,15 @@ import { Component } from '@angular/core';
           </a>
         </small>
         <small>
+<<<<<<< HEAD
           <a href="#" (click)="add()">Add</a> |
           <a href="#" (click)="update()">Update</a> |
           <a href="#" (click)="remove()">Remove</a> 
+=======
+          <a href="javascript:void(0)" (click)="add()">Add</a> |
+          <a href="javascript:void(0)" (click)="update()">Update</a> |
+          <a href="javascript:void(0)" (click)="remove()">Remove</a> 
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
         </small>
       </h3>
       <div style='float:left;width:75%'>
@@ -29,6 +35,11 @@ import { Component } from '@angular/core';
           [limit]="5"
           [selected]="selected"
           [selectionType]="'checkbox'"
+<<<<<<< HEAD
+=======
+          [selectAllRowsOnPage]="false"
+          [displayCheck]="displayCheck"
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
           (activate)="onActivate($event)"
           (select)='onSelect($event)'>
           <ngx-datatable-column
@@ -103,4 +114,10 @@ export class CheckboxSelectionComponent {
     this.selected = [];
   }
 
+<<<<<<< HEAD
+=======
+  displayCheck(row) {
+    return row.name !== 'Ethel Price';
+  }
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 }

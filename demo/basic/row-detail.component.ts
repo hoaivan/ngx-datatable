@@ -12,8 +12,13 @@ import { Component, ViewEncapsulation, ViewChild } from '@angular/core';
           </a>
         </small>
         <small>
+<<<<<<< HEAD
           <a href="#" (click)="table.rowDetail.expandAllRows()">Expand All</a> | 
           <a href="#" (click)="table.rowDetail.collapseAllRows()">Collapse All</a>
+=======
+          <a href="javascript:void(0)" (click)="table.rowDetail.expandAllRows()">Expand All</a> | 
+          <a href="javascript:void(0)" (click)="table.rowDetail.collapseAllRows()">Collapse All</a>
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
         </small>
       </h3>
       <ngx-datatable
@@ -23,12 +28,20 @@ import { Component, ViewEncapsulation, ViewChild } from '@angular/core';
         [headerHeight]="50"
         [footerHeight]="50"
         [rowHeight]="50"
+<<<<<<< HEAD
         [scrollbarV]="50"
+=======
+        [scrollbarV]="true"
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
         [rows]='rows'
         (page)="onPage($event)">
         <!-- Row Detail Template -->
         <ngx-datatable-row-detail [rowHeight]="100" #myDetailRow (toggle)="onDetailToggle($event)">
+<<<<<<< HEAD
           <ng-template let-row="row" ngx-datatable-row-detail-template>
+=======
+          <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
             <div style="padding-left:35px;">
               <div><strong>Address</strong></div>
               <div>{{row.address.city}}, {{row.address.state}}</div>
@@ -43,17 +56,26 @@ import { Component, ViewEncapsulation, ViewChild } from '@angular/core';
           [sortable]="false"
           [draggable]="false"
           [canAutoResize]="false">
+<<<<<<< HEAD
           <ng-template let-row="row" ngx-datatable-cell-template>
             <a
               href="#"
               [class.datatable-icon-right]="!row.$$expanded"
               [class.datatable-icon-down]="row.$$expanded"
+=======
+          <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+            <a
+              href="javascript:void(0)"
+              [class.datatable-icon-right]="!expanded"
+              [class.datatable-icon-down]="expanded"
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
               title="Expand/Collapse Row"
               (click)="toggleExpandRow(row)">
             </a>
           </ng-template>
         </ngx-datatable-column>
         <ngx-datatable-column name="Index" width="80">
+<<<<<<< HEAD
           <ng-template let-row="row" ngx-datatable-cell-template>
             <strong>{{row.$$index}}</strong>
           </ng-template>
@@ -61,6 +83,15 @@ import { Component, ViewEncapsulation, ViewChild } from '@angular/core';
         <ngx-datatable-column name="Expanded" width="80">
           <ng-template let-row="row" ngx-datatable-cell-template>
             <strong>{{row.$$expanded === 1}}</strong>
+=======
+          <ng-template let-rowIndex="rowIndex" let-row="row" ngx-datatable-cell-template>
+            <strong>{{rowIndex}}</strong>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Expanded" width="80">
+          <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+            <strong>{{expanded === 1}}</strong>
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
           </ng-template>
         </ngx-datatable-column>
         <ngx-datatable-column name="Name" width="200">

@@ -22,23 +22,37 @@ import { Component } from '@angular/core';
         [rowHeight]="'auto'"
         [rows]="rows">
         <ngx-datatable-column name="Name">
+<<<<<<< HEAD
           <ng-template ngx-datatable-cell-template let-value="value" let-row="row">
             <span
               title="Double click to edit"
               (dblclick)="editing[row.$$index + '-name'] = true"
               *ngIf="!editing[row.$$index + '-name']">
+=======
+          <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-value="value" let-row="row">
+            <span
+              title="Double click to edit"
+              (dblclick)="editing[rowIndex + '-name'] = true"
+              *ngIf="!editing[rowIndex + '-name']">
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
               {{value}}
             </span>
             <input
               autofocus
+<<<<<<< HEAD
               (blur)="updateValue($event, 'name', value, row)"
               *ngIf="editing[row.$$index + '-name']"
+=======
+              (blur)="updateValue($event, 'name', rowIndex)"
+              *ngIf="editing[rowIndex+ '-name']"
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
               type="text"
               [value]="value"
             />
           </ng-template>
         </ngx-datatable-column>
         <ngx-datatable-column name="Gender">
+<<<<<<< HEAD
           <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
              <span
               title="Double click to edit"
@@ -49,6 +63,18 @@ import { Component } from '@angular/core';
             <select
               *ngIf="editing[row.$$index + '-gender']"
               (change)="updateValue($event, 'gender', value, row)"
+=======
+          <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-row="row" let-value="value">
+             <span
+              title="Double click to edit"
+              (dblclick)="editing[rowIndex + '-gender'] = true"
+              *ngIf="!editing[rowIndex + '-gender']">
+              {{value}}
+            </span>
+            <select
+              *ngIf="editing[rowIndex + '-gender']"
+              (change)="updateValue($event, 'gender', rowIndex)"
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
               [value]="value">
               <option value="male">Male</option>
               <option value="female">Female</option>
@@ -86,9 +112,18 @@ export class InlineEditComponent {
     req.send();
   }
 
+<<<<<<< HEAD
   updateValue(event, cell, cellValue, row) {
     this.editing[row.$$index + '-' + cell] = false;
     this.rows[row.$$index][cell] = event.target.value;
+=======
+  updateValue(event, cell, rowIndex) {
+    console.log('inline editing rowIndex', rowIndex)
+    this.editing[rowIndex + '-' + cell] = false;
+    this.rows[rowIndex][cell] = event.target.value;
+    this.rows = [...this.rows];
+    console.log('UPDATED!', this.rows[rowIndex][cell]);
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
   }
 
 }

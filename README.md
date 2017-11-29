@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # ngx-datatable (f.k.a. angular2-data-table)
+=======
+# ngx-datatable
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 [![Join the chat at https://gitter.im/swimlane/ngx-datatable](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/swimlane/ngx-datatable?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) 
 [![Code Climate](https://codeclimate.com/github/swimlane/ngx-datatable/badges/gpa.svg)](https://codeclimate.com/github/swimlane/ngx-datatable)
 [![Build Status](https://travis-ci.org/swimlane/ngx-datatable.svg?branch=master)](https://travis-ci.org/swimlane/ngx-datatable)
@@ -11,7 +15,11 @@ It was built for modern browsers using _TypeScript, CSS3 and HTML5_ and Angular 
 
 Check out the [documentation](https://swimlane.gitbooks.io/ngx-datatable/) & [demos](http://swimlane.github.io/ngx-datatable/) for more information!
 
+<<<<<<< HEAD
 See the [changelog](https://github.com/swimlane/ngx-datatable/blob/master/docs/changelog.md) for recent changes.
+=======
+See the [changelog](https://github.com/swimlane/ngx-datatable/blob/master/docs/changelog.md) for recent changes. **11.0.0 supports Angular 5, if you need Angular 4 support use 10.4.0.**
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 
 ## Features
 - Handle large data sets ( Virtual DOM )

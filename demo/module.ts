@@ -13,6 +13,10 @@ import { HorzVertScrolling } from './basic/scrolling.component';
 import { MultipleTablesComponent } from './basic/multiple.component';
 import { FullScreenComponent } from './basic/fullscreen.component';
 import { RowDetailsComponent } from './basic/row-detail.component';
+<<<<<<< HEAD
+=======
+import { ResponsiveComponent } from './basic/responsive.component';
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 import { FilterBarComponent } from './basic/filter.component';
 import { TabsDemoComponent } from './basic/tabs.component';
 import { LiveDataComponent } from './basic/live.component';
@@ -20,8 +24,17 @@ import { RxDemoComponent } from './basic/rx.component';
 import { ContextMenuDemoComponent } from './basic/contextmenu.component';
 import { RowCssComponent } from './basic/css.component';
 import { DynamicHeightComponent } from './basic/dynamic-height.component';
+<<<<<<< HEAD
 import { DarkThemeComponent } from './basic/dark-theme.component';
 import { FooterDemoComponent } from './basic/footer.component';
+=======
+import { FooterDemoComponent } from './basic/footer.component';
+import { RowGroupingComponent } from './basic/row-grouping.component';
+
+// -- Themes
+import { BootstrapThemeComponent } from './basic/bootstrap.component';
+import { DarkThemeComponent } from './basic/dark-theme.component';
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 
 // -- Paging
 import { ClientPagingComponent } from './paging/paging-client.component';
@@ -66,6 +79,10 @@ import { ColumnPinningComponent } from './columns/pinning.component';
     HorzVertScrolling,
     MultipleTablesComponent,
     RowDetailsComponent,
+<<<<<<< HEAD
+=======
+    ResponsiveComponent,
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
     ClientPagingComponent,
     ServerPagingComponent,
     ServerScrollingComponent,
@@ -96,7 +113,13 @@ import { ColumnPinningComponent } from './columns/pinning.component';
     MultiClickSelectionComponent,
     RowCssComponent,
     DynamicHeightComponent,
+<<<<<<< HEAD
     FooterDemoComponent
+=======
+    FooterDemoComponent,
+    RowGroupingComponent,
+    BootstrapThemeComponent
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
   ],
   imports: [BrowserModule, NgxDatatableModule],
   bootstrap: [AppComponent]

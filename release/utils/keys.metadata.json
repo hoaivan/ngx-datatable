@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 [{"__symbolic":"module","version":3,"metadata":{"Keys":{"up":38,"down":40,"return":13,"escape":27,"left":37,"right":39}}},{"__symbolic":"module","version":1,"metadata":{"Keys":{"up":38,"down":40,"return":13,"escape":27,"left":37,"right":39}}}]
+=======
+[{"__symbolic":"module","version":4,"metadata":{"Keys":{"up":38,"down":40,"return":13,"escape":27,"left":37,"right":39}}}]
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2

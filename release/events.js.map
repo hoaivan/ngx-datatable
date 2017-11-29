@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"version":3,"sources":["../build/events.ts"],"names":[],"mappings":";;AAEa,QAAA,UAAU,GAAI,MAAc,CAAC,UAAwB,CAAC;AACtD,QAAA,aAAa,GAAI,MAAc,CAAC,aAA8B,CAAC","file":"events.js","sourceRoot":""}
+=======
+{"version":3,"file":"events.js","sourceRoot":"","sources":["../build/events.ts"],"names":[],"mappings":";;AAEA,kCAAkC;AACrB,QAAA,UAAU,GAAI,MAAc,CAAC,UAAwB,CAAC;AACtD,QAAA,aAAa,GAAI,MAAc,CAAC,aAA8B,CAAC"}
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2

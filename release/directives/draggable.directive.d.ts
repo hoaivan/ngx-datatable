@@ -1,6 +1,9 @@
 import { ElementRef, EventEmitter, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
+<<<<<<< HEAD
 import 'rxjs/add/operator/takeUntil';
+=======
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
 /**
  * Draggable Directive for Angular2
  *

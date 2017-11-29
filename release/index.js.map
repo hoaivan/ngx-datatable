@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"version":3,"sources":["../build/index.ts"],"names":[],"mappings":";;;;;AAAA,wCAAmC;AACnC,6BAAwB;AACxB,kCAA6B","file":"index.js","sourceRoot":""}
+=======
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../build/index.ts"],"names":[],"mappings":";;;;;AAAA,wCAAmC;AACnC,6BAAwB;AACxB,kCAA6B"}
+>>>>>>> 9e918305d8b1c12e10b273ef8864a0d9caff3cb2
