@@ -1,5 +1,5 @@
 /**
- * angular2-data-table v"9.3.1" (https://github.com/swimlane/angular2-data-table)
+ * angular2-data-table v"10.3.0" (https://github.com/swimlane/angular2-data-table)
  * Copyright 2016
  * Licensed under MIT
  */
@@ -80,6 +80,1926 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
+/***/ "./node_modules/base64-js/index.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.byteLength = byteLength
+exports.toByteArray = toByteArray
+exports.fromByteArray = fromByteArray
+
+var lookup = []
+var revLookup = []
+var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
+
+var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+for (var i = 0, len = code.length; i < len; ++i) {
+  lookup[i] = code[i]
+  revLookup[code.charCodeAt(i)] = i
+}
+
+revLookup['-'.charCodeAt(0)] = 62
+revLookup['_'.charCodeAt(0)] = 63
+
+function placeHoldersCount (b64) {
+  var len = b64.length
+  if (len % 4 > 0) {
+    throw new Error('Invalid string. Length must be a multiple of 4')
+  }
+
+  // the number of equal signs (place holders)
+  // if there are two placeholders, than the two characters before it
+  // represent one byte
+  // if there is only one, then the three characters before it represent 2 bytes
+  // this is just a cheap hack to not do indexOf twice
+  return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
+}
+
+function byteLength (b64) {
+  // base64 is 4/3 + up to two characters of the original data
+  return (b64.length * 3 / 4) - placeHoldersCount(b64)
+}
+
+function toByteArray (b64) {
+  var i, l, tmp, placeHolders, arr
+  var len = b64.length
+  placeHolders = placeHoldersCount(b64)
+
+  arr = new Arr((len * 3 / 4) - placeHolders)
+
+  // if there are placeholders, only get up to the last complete 4 chars
+  l = placeHolders > 0 ? len - 4 : len
+
+  var L = 0
+
+  for (i = 0; i < l; i += 4) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
+    arr[L++] = (tmp >> 16) & 0xFF
+    arr[L++] = (tmp >> 8) & 0xFF
+    arr[L++] = tmp & 0xFF
+  }
+
+  if (placeHolders === 2) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4)
+    arr[L++] = tmp & 0xFF
+  } else if (placeHolders === 1) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 10) | (revLookup[b64.charCodeAt(i + 1)] << 4) | (revLookup[b64.charCodeAt(i + 2)] >> 2)
+    arr[L++] = (tmp >> 8) & 0xFF
+    arr[L++] = tmp & 0xFF
+  }
+
+  return arr
+}
+
+function tripletToBase64 (num) {
+  return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F]
+}
+
+function encodeChunk (uint8, start, end) {
+  var tmp
+  var output = []
+  for (var i = start; i < end; i += 3) {
+    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+    output.push(tripletToBase64(tmp))
+  }
+  return output.join('')
+}
+
+function fromByteArray (uint8) {
+  var tmp
+  var len = uint8.length
+  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
+  var output = ''
+  var parts = []
+  var maxChunkLength = 16383 // must be multiple of 3
+
+  // go through the array every three bytes, we'll deal with trailing stuff later
+  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
+  }
+
+  // pad the end with zeros, but make sure to not forget the extra bytes
+  if (extraBytes === 1) {
+    tmp = uint8[len - 1]
+    output += lookup[tmp >> 2]
+    output += lookup[(tmp << 4) & 0x3F]
+    output += '=='
+  } else if (extraBytes === 2) {
+    tmp = (uint8[len - 2] << 8) + (uint8[len - 1])
+    output += lookup[tmp >> 10]
+    output += lookup[(tmp >> 4) & 0x3F]
+    output += lookup[(tmp << 2) & 0x3F]
+    output += '='
+  }
+
+  parts.push(output)
+
+  return parts.join('')
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/buffer/index.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @license  MIT
+ */
+/* eslint-disable no-proto */
+
+
+
+var base64 = __webpack_require__("./node_modules/base64-js/index.js")
+var ieee754 = __webpack_require__("./node_modules/ieee754/index.js")
+var isArray = __webpack_require__("./node_modules/isarray/index.js")
+
+exports.Buffer = Buffer
+exports.SlowBuffer = SlowBuffer
+exports.INSPECT_MAX_BYTES = 50
+
+/**
+ * If `Buffer.TYPED_ARRAY_SUPPORT`:
+ *   === true    Use Uint8Array implementation (fastest)
+ *   === false   Use Object implementation (most compatible, even IE6)
+ *
+ * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
+ * Opera 11.6+, iOS 4.2+.
+ *
+ * Due to various browser bugs, sometimes the Object implementation will be used even
+ * when the browser supports typed arrays.
+ *
+ * Note:
+ *
+ *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
+ *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
+ *
+ *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
+ *
+ *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
+ *     incorrect length in some situations.
+
+ * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
+ * get the Object implementation, which is slower but behaves correctly.
+ */
+Buffer.TYPED_ARRAY_SUPPORT = global.TYPED_ARRAY_SUPPORT !== undefined
+  ? global.TYPED_ARRAY_SUPPORT
+  : typedArraySupport()
+
+/*
+ * Export kMaxLength after typed array support is determined.
+ */
+exports.kMaxLength = kMaxLength()
+
+function typedArraySupport () {
+  try {
+    var arr = new Uint8Array(1)
+    arr.__proto__ = {__proto__: Uint8Array.prototype, foo: function () { return 42 }}
+    return arr.foo() === 42 && // typed array instances can be augmented
+        typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
+        arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
+  } catch (e) {
+    return false
+  }
+}
+
+function kMaxLength () {
+  return Buffer.TYPED_ARRAY_SUPPORT
+    ? 0x7fffffff
+    : 0x3fffffff
+}
+
+function createBuffer (that, length) {
+  if (kMaxLength() < length) {
+    throw new RangeError('Invalid typed array length')
+  }
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = new Uint8Array(length)
+    that.__proto__ = Buffer.prototype
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    if (that === null) {
+      that = new Buffer(length)
+    }
+    that.length = length
+  }
+
+  return that
+}
+
+/**
+ * The Buffer constructor returns instances of `Uint8Array` that have their
+ * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
+ * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
+ * and the `Uint8Array` methods. Square bracket notation works as expected -- it
+ * returns a single octet.
+ *
+ * The `Uint8Array` prototype remains unmodified.
+ */
+
+function Buffer (arg, encodingOrOffset, length) {
+  if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
+    return new Buffer(arg, encodingOrOffset, length)
+  }
+
+  // Common case.
+  if (typeof arg === 'number') {
+    if (typeof encodingOrOffset === 'string') {
+      throw new Error(
+        'If encoding is specified then the first argument must be a string'
+      )
+    }
+    return allocUnsafe(this, arg)
+  }
+  return from(this, arg, encodingOrOffset, length)
+}
+
+Buffer.poolSize = 8192 // not used by this implementation
+
+// TODO: Legacy, not needed anymore. Remove in next major version.
+Buffer._augment = function (arr) {
+  arr.__proto__ = Buffer.prototype
+  return arr
+}
+
+function from (that, value, encodingOrOffset, length) {
+  if (typeof value === 'number') {
+    throw new TypeError('"value" argument must not be a number')
+  }
+
+  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
+    return fromArrayBuffer(that, value, encodingOrOffset, length)
+  }
+
+  if (typeof value === 'string') {
+    return fromString(that, value, encodingOrOffset)
+  }
+
+  return fromObject(that, value)
+}
+
+/**
+ * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
+ * if value is a number.
+ * Buffer.from(str[, encoding])
+ * Buffer.from(array)
+ * Buffer.from(buffer)
+ * Buffer.from(arrayBuffer[, byteOffset[, length]])
+ **/
+Buffer.from = function (value, encodingOrOffset, length) {
+  return from(null, value, encodingOrOffset, length)
+}
+
+if (Buffer.TYPED_ARRAY_SUPPORT) {
+  Buffer.prototype.__proto__ = Uint8Array.prototype
+  Buffer.__proto__ = Uint8Array
+  if (typeof Symbol !== 'undefined' && Symbol.species &&
+      Buffer[Symbol.species] === Buffer) {
+    // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
+    Object.defineProperty(Buffer, Symbol.species, {
+      value: null,
+      configurable: true
+    })
+  }
+}
+
+function assertSize (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('"size" argument must be a number')
+  } else if (size < 0) {
+    throw new RangeError('"size" argument must not be negative')
+  }
+}
+
+function alloc (that, size, fill, encoding) {
+  assertSize(size)
+  if (size <= 0) {
+    return createBuffer(that, size)
+  }
+  if (fill !== undefined) {
+    // Only pay attention to encoding if it's a string. This
+    // prevents accidentally sending in a number that would
+    // be interpretted as a start offset.
+    return typeof encoding === 'string'
+      ? createBuffer(that, size).fill(fill, encoding)
+      : createBuffer(that, size).fill(fill)
+  }
+  return createBuffer(that, size)
+}
+
+/**
+ * Creates a new filled Buffer instance.
+ * alloc(size[, fill[, encoding]])
+ **/
+Buffer.alloc = function (size, fill, encoding) {
+  return alloc(null, size, fill, encoding)
+}
+
+function allocUnsafe (that, size) {
+  assertSize(size)
+  that = createBuffer(that, size < 0 ? 0 : checked(size) | 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) {
+    for (var i = 0; i < size; ++i) {
+      that[i] = 0
+    }
+  }
+  return that
+}
+
+/**
+ * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
+ * */
+Buffer.allocUnsafe = function (size) {
+  return allocUnsafe(null, size)
+}
+/**
+ * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
+ */
+Buffer.allocUnsafeSlow = function (size) {
+  return allocUnsafe(null, size)
+}
+
+function fromString (that, string, encoding) {
+  if (typeof encoding !== 'string' || encoding === '') {
+    encoding = 'utf8'
+  }
+
+  if (!Buffer.isEncoding(encoding)) {
+    throw new TypeError('"encoding" must be a valid string encoding')
+  }
+
+  var length = byteLength(string, encoding) | 0
+  that = createBuffer(that, length)
+
+  var actual = that.write(string, encoding)
+
+  if (actual !== length) {
+    // Writing a hex string, for example, that contains invalid characters will
+    // cause everything after the first invalid character to be ignored. (e.g.
+    // 'abxxcd' will be treated as 'ab')
+    that = that.slice(0, actual)
+  }
+
+  return that
+}
+
+function fromArrayLike (that, array) {
+  var length = array.length < 0 ? 0 : checked(array.length) | 0
+  that = createBuffer(that, length)
+  for (var i = 0; i < length; i += 1) {
+    that[i] = array[i] & 255
+  }
+  return that
+}
+
+function fromArrayBuffer (that, array, byteOffset, length) {
+  array.byteLength // this throws if `array` is not a valid ArrayBuffer
+
+  if (byteOffset < 0 || array.byteLength < byteOffset) {
+    throw new RangeError('\'offset\' is out of bounds')
+  }
+
+  if (array.byteLength < byteOffset + (length || 0)) {
+    throw new RangeError('\'length\' is out of bounds')
+  }
+
+  if (byteOffset === undefined && length === undefined) {
+    array = new Uint8Array(array)
+  } else if (length === undefined) {
+    array = new Uint8Array(array, byteOffset)
+  } else {
+    array = new Uint8Array(array, byteOffset, length)
+  }
+
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = array
+    that.__proto__ = Buffer.prototype
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    that = fromArrayLike(that, array)
+  }
+  return that
+}
+
+function fromObject (that, obj) {
+  if (Buffer.isBuffer(obj)) {
+    var len = checked(obj.length) | 0
+    that = createBuffer(that, len)
+
+    if (that.length === 0) {
+      return that
+    }
+
+    obj.copy(that, 0, 0, len)
+    return that
+  }
+
+  if (obj) {
+    if ((typeof ArrayBuffer !== 'undefined' &&
+        obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
+      if (typeof obj.length !== 'number' || isnan(obj.length)) {
+        return createBuffer(that, 0)
+      }
+      return fromArrayLike(that, obj)
+    }
+
+    if (obj.type === 'Buffer' && isArray(obj.data)) {
+      return fromArrayLike(that, obj.data)
+    }
+  }
+
+  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
+}
+
+function checked (length) {
+  // Note: cannot use `length < kMaxLength()` here because that fails when
+  // length is NaN (which is otherwise coerced to zero.)
+  if (length >= kMaxLength()) {
+    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
+                         'size: 0x' + kMaxLength().toString(16) + ' bytes')
+  }
+  return length | 0
+}
+
+function SlowBuffer (length) {
+  if (+length != length) { // eslint-disable-line eqeqeq
+    length = 0
+  }
+  return Buffer.alloc(+length)
+}
+
+Buffer.isBuffer = function isBuffer (b) {
+  return !!(b != null && b._isBuffer)
+}
+
+Buffer.compare = function compare (a, b) {
+  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
+    throw new TypeError('Arguments must be Buffers')
+  }
+
+  if (a === b) return 0
+
+  var x = a.length
+  var y = b.length
+
+  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
+    if (a[i] !== b[i]) {
+      x = a[i]
+      y = b[i]
+      break
+    }
+  }
+
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+}
+
+Buffer.isEncoding = function isEncoding (encoding) {
+  switch (String(encoding).toLowerCase()) {
+    case 'hex':
+    case 'utf8':
+    case 'utf-8':
+    case 'ascii':
+    case 'latin1':
+    case 'binary':
+    case 'base64':
+    case 'ucs2':
+    case 'ucs-2':
+    case 'utf16le':
+    case 'utf-16le':
+      return true
+    default:
+      return false
+  }
+}
+
+Buffer.concat = function concat (list, length) {
+  if (!isArray(list)) {
+    throw new TypeError('"list" argument must be an Array of Buffers')
+  }
+
+  if (list.length === 0) {
+    return Buffer.alloc(0)
+  }
+
+  var i
+  if (length === undefined) {
+    length = 0
+    for (i = 0; i < list.length; ++i) {
+      length += list[i].length
+    }
+  }
+
+  var buffer = Buffer.allocUnsafe(length)
+  var pos = 0
+  for (i = 0; i < list.length; ++i) {
+    var buf = list[i]
+    if (!Buffer.isBuffer(buf)) {
+      throw new TypeError('"list" argument must be an Array of Buffers')
+    }
+    buf.copy(buffer, pos)
+    pos += buf.length
+  }
+  return buffer
+}
+
+function byteLength (string, encoding) {
+  if (Buffer.isBuffer(string)) {
+    return string.length
+  }
+  if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' &&
+      (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
+    return string.byteLength
+  }
+  if (typeof string !== 'string') {
+    string = '' + string
+  }
+
+  var len = string.length
+  if (len === 0) return 0
+
+  // Use a for loop to avoid recursion
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'ascii':
+      case 'latin1':
+      case 'binary':
+        return len
+      case 'utf8':
+      case 'utf-8':
+      case undefined:
+        return utf8ToBytes(string).length
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return len * 2
+      case 'hex':
+        return len >>> 1
+      case 'base64':
+        return base64ToBytes(string).length
+      default:
+        if (loweredCase) return utf8ToBytes(string).length // assume utf8
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+Buffer.byteLength = byteLength
+
+function slowToString (encoding, start, end) {
+  var loweredCase = false
+
+  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
+  // property of a typed array.
+
+  // This behaves neither like String nor Uint8Array in that we set start/end
+  // to their upper/lower bounds if the value passed is out of range.
+  // undefined is handled specially as per ECMA-262 6th Edition,
+  // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
+  if (start === undefined || start < 0) {
+    start = 0
+  }
+  // Return early if start > this.length. Done here to prevent potential uint32
+  // coercion fail below.
+  if (start > this.length) {
+    return ''
+  }
+
+  if (end === undefined || end > this.length) {
+    end = this.length
+  }
+
+  if (end <= 0) {
+    return ''
+  }
+
+  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
+  end >>>= 0
+  start >>>= 0
+
+  if (end <= start) {
+    return ''
+  }
+
+  if (!encoding) encoding = 'utf8'
+
+  while (true) {
+    switch (encoding) {
+      case 'hex':
+        return hexSlice(this, start, end)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Slice(this, start, end)
+
+      case 'ascii':
+        return asciiSlice(this, start, end)
+
+      case 'latin1':
+      case 'binary':
+        return latin1Slice(this, start, end)
+
+      case 'base64':
+        return base64Slice(this, start, end)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return utf16leSlice(this, start, end)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = (encoding + '').toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+
+// The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
+// Buffer instances.
+Buffer.prototype._isBuffer = true
+
+function swap (b, n, m) {
+  var i = b[n]
+  b[n] = b[m]
+  b[m] = i
+}
+
+Buffer.prototype.swap16 = function swap16 () {
+  var len = this.length
+  if (len % 2 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 16-bits')
+  }
+  for (var i = 0; i < len; i += 2) {
+    swap(this, i, i + 1)
+  }
+  return this
+}
+
+Buffer.prototype.swap32 = function swap32 () {
+  var len = this.length
+  if (len % 4 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 32-bits')
+  }
+  for (var i = 0; i < len; i += 4) {
+    swap(this, i, i + 3)
+    swap(this, i + 1, i + 2)
+  }
+  return this
+}
+
+Buffer.prototype.swap64 = function swap64 () {
+  var len = this.length
+  if (len % 8 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 64-bits')
+  }
+  for (var i = 0; i < len; i += 8) {
+    swap(this, i, i + 7)
+    swap(this, i + 1, i + 6)
+    swap(this, i + 2, i + 5)
+    swap(this, i + 3, i + 4)
+  }
+  return this
+}
+
+Buffer.prototype.toString = function toString () {
+  var length = this.length | 0
+  if (length === 0) return ''
+  if (arguments.length === 0) return utf8Slice(this, 0, length)
+  return slowToString.apply(this, arguments)
+}
+
+Buffer.prototype.equals = function equals (b) {
+  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
+  if (this === b) return true
+  return Buffer.compare(this, b) === 0
+}
+
+Buffer.prototype.inspect = function inspect () {
+  var str = ''
+  var max = exports.INSPECT_MAX_BYTES
+  if (this.length > 0) {
+    str = this.toString('hex', 0, max).match(/.{2}/g).join(' ')
+    if (this.length > max) str += ' ... '
+  }
+  return '<Buffer ' + str + '>'
+}
+
+Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
+  if (!Buffer.isBuffer(target)) {
+    throw new TypeError('Argument must be a Buffer')
+  }
+
+  if (start === undefined) {
+    start = 0
+  }
+  if (end === undefined) {
+    end = target ? target.length : 0
+  }
+  if (thisStart === undefined) {
+    thisStart = 0
+  }
+  if (thisEnd === undefined) {
+    thisEnd = this.length
+  }
+
+  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
+    throw new RangeError('out of range index')
+  }
+
+  if (thisStart >= thisEnd && start >= end) {
+    return 0
+  }
+  if (thisStart >= thisEnd) {
+    return -1
+  }
+  if (start >= end) {
+    return 1
+  }
+
+  start >>>= 0
+  end >>>= 0
+  thisStart >>>= 0
+  thisEnd >>>= 0
+
+  if (this === target) return 0
+
+  var x = thisEnd - thisStart
+  var y = end - start
+  var len = Math.min(x, y)
+
+  var thisCopy = this.slice(thisStart, thisEnd)
+  var targetCopy = target.slice(start, end)
+
+  for (var i = 0; i < len; ++i) {
+    if (thisCopy[i] !== targetCopy[i]) {
+      x = thisCopy[i]
+      y = targetCopy[i]
+      break
+    }
+  }
+
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+}
+
+// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
+// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
+//
+// Arguments:
+// - buffer - a Buffer to search
+// - val - a string, Buffer, or number
+// - byteOffset - an index into `buffer`; will be clamped to an int32
+// - encoding - an optional encoding, relevant is val is a string
+// - dir - true for indexOf, false for lastIndexOf
+function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
+  // Empty buffer means no match
+  if (buffer.length === 0) return -1
+
+  // Normalize byteOffset
+  if (typeof byteOffset === 'string') {
+    encoding = byteOffset
+    byteOffset = 0
+  } else if (byteOffset > 0x7fffffff) {
+    byteOffset = 0x7fffffff
+  } else if (byteOffset < -0x80000000) {
+    byteOffset = -0x80000000
+  }
+  byteOffset = +byteOffset  // Coerce to Number.
+  if (isNaN(byteOffset)) {
+    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
+    byteOffset = dir ? 0 : (buffer.length - 1)
+  }
+
+  // Normalize byteOffset: negative offsets start from the end of the buffer
+  if (byteOffset < 0) byteOffset = buffer.length + byteOffset
+  if (byteOffset >= buffer.length) {
+    if (dir) return -1
+    else byteOffset = buffer.length - 1
+  } else if (byteOffset < 0) {
+    if (dir) byteOffset = 0
+    else return -1
+  }
+
+  // Normalize val
+  if (typeof val === 'string') {
+    val = Buffer.from(val, encoding)
+  }
+
+  // Finally, search either indexOf (if dir is true) or lastIndexOf
+  if (Buffer.isBuffer(val)) {
+    // Special case: looking for empty string/buffer always fails
+    if (val.length === 0) {
+      return -1
+    }
+    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
+  } else if (typeof val === 'number') {
+    val = val & 0xFF // Search for a byte value [0-255]
+    if (Buffer.TYPED_ARRAY_SUPPORT &&
+        typeof Uint8Array.prototype.indexOf === 'function') {
+      if (dir) {
+        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
+      } else {
+        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
+      }
+    }
+    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
+  }
+
+  throw new TypeError('val must be string, number or Buffer')
+}
+
+function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
+  var indexSize = 1
+  var arrLength = arr.length
+  var valLength = val.length
+
+  if (encoding !== undefined) {
+    encoding = String(encoding).toLowerCase()
+    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
+        encoding === 'utf16le' || encoding === 'utf-16le') {
+      if (arr.length < 2 || val.length < 2) {
+        return -1
+      }
+      indexSize = 2
+      arrLength /= 2
+      valLength /= 2
+      byteOffset /= 2
+    }
+  }
+
+  function read (buf, i) {
+    if (indexSize === 1) {
+      return buf[i]
+    } else {
+      return buf.readUInt16BE(i * indexSize)
+    }
+  }
+
+  var i
+  if (dir) {
+    var foundIndex = -1
+    for (i = byteOffset; i < arrLength; i++) {
+      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
+        if (foundIndex === -1) foundIndex = i
+        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
+      } else {
+        if (foundIndex !== -1) i -= i - foundIndex
+        foundIndex = -1
+      }
+    }
+  } else {
+    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength
+    for (i = byteOffset; i >= 0; i--) {
+      var found = true
+      for (var j = 0; j < valLength; j++) {
+        if (read(arr, i + j) !== read(val, j)) {
+          found = false
+          break
+        }
+      }
+      if (found) return i
+    }
+  }
+
+  return -1
+}
+
+Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
+  return this.indexOf(val, byteOffset, encoding) !== -1
+}
+
+Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
+}
+
+Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
+}
+
+function hexWrite (buf, string, offset, length) {
+  offset = Number(offset) || 0
+  var remaining = buf.length - offset
+  if (!length) {
+    length = remaining
+  } else {
+    length = Number(length)
+    if (length > remaining) {
+      length = remaining
+    }
+  }
+
+  // must be an even number of digits
+  var strLen = string.length
+  if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
+
+  if (length > strLen / 2) {
+    length = strLen / 2
+  }
+  for (var i = 0; i < length; ++i) {
+    var parsed = parseInt(string.substr(i * 2, 2), 16)
+    if (isNaN(parsed)) return i
+    buf[offset + i] = parsed
+  }
+  return i
+}
+
+function utf8Write (buf, string, offset, length) {
+  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+function asciiWrite (buf, string, offset, length) {
+  return blitBuffer(asciiToBytes(string), buf, offset, length)
+}
+
+function latin1Write (buf, string, offset, length) {
+  return asciiWrite(buf, string, offset, length)
+}
+
+function base64Write (buf, string, offset, length) {
+  return blitBuffer(base64ToBytes(string), buf, offset, length)
+}
+
+function ucs2Write (buf, string, offset, length) {
+  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+Buffer.prototype.write = function write (string, offset, length, encoding) {
+  // Buffer#write(string)
+  if (offset === undefined) {
+    encoding = 'utf8'
+    length = this.length
+    offset = 0
+  // Buffer#write(string, encoding)
+  } else if (length === undefined && typeof offset === 'string') {
+    encoding = offset
+    length = this.length
+    offset = 0
+  // Buffer#write(string, offset[, length][, encoding])
+  } else if (isFinite(offset)) {
+    offset = offset | 0
+    if (isFinite(length)) {
+      length = length | 0
+      if (encoding === undefined) encoding = 'utf8'
+    } else {
+      encoding = length
+      length = undefined
+    }
+  // legacy write(string, encoding, offset, length) - remove in v0.13
+  } else {
+    throw new Error(
+      'Buffer.write(string, encoding, offset[, length]) is no longer supported'
+    )
+  }
+
+  var remaining = this.length - offset
+  if (length === undefined || length > remaining) length = remaining
+
+  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
+    throw new RangeError('Attempt to write outside buffer bounds')
+  }
+
+  if (!encoding) encoding = 'utf8'
+
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'hex':
+        return hexWrite(this, string, offset, length)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Write(this, string, offset, length)
+
+      case 'ascii':
+        return asciiWrite(this, string, offset, length)
+
+      case 'latin1':
+      case 'binary':
+        return latin1Write(this, string, offset, length)
+
+      case 'base64':
+        // Warning: maxLength not taken into account in base64Write
+        return base64Write(this, string, offset, length)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return ucs2Write(this, string, offset, length)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+
+Buffer.prototype.toJSON = function toJSON () {
+  return {
+    type: 'Buffer',
+    data: Array.prototype.slice.call(this._arr || this, 0)
+  }
+}
+
+function base64Slice (buf, start, end) {
+  if (start === 0 && end === buf.length) {
+    return base64.fromByteArray(buf)
+  } else {
+    return base64.fromByteArray(buf.slice(start, end))
+  }
+}
+
+function utf8Slice (buf, start, end) {
+  end = Math.min(buf.length, end)
+  var res = []
+
+  var i = start
+  while (i < end) {
+    var firstByte = buf[i]
+    var codePoint = null
+    var bytesPerSequence = (firstByte > 0xEF) ? 4
+      : (firstByte > 0xDF) ? 3
+      : (firstByte > 0xBF) ? 2
+      : 1
+
+    if (i + bytesPerSequence <= end) {
+      var secondByte, thirdByte, fourthByte, tempCodePoint
+
+      switch (bytesPerSequence) {
+        case 1:
+          if (firstByte < 0x80) {
+            codePoint = firstByte
+          }
+          break
+        case 2:
+          secondByte = buf[i + 1]
+          if ((secondByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F)
+            if (tempCodePoint > 0x7F) {
+              codePoint = tempCodePoint
+            }
+          }
+          break
+        case 3:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F)
+            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
+              codePoint = tempCodePoint
+            }
+          }
+          break
+        case 4:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          fourthByte = buf[i + 3]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F)
+            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
+              codePoint = tempCodePoint
+            }
+          }
+      }
+    }
+
+    if (codePoint === null) {
+      // we did not generate a valid codePoint so insert a
+      // replacement char (U+FFFD) and advance only 1 byte
+      codePoint = 0xFFFD
+      bytesPerSequence = 1
+    } else if (codePoint > 0xFFFF) {
+      // encode to utf16 (surrogate pair dance)
+      codePoint -= 0x10000
+      res.push(codePoint >>> 10 & 0x3FF | 0xD800)
+      codePoint = 0xDC00 | codePoint & 0x3FF
+    }
+
+    res.push(codePoint)
+    i += bytesPerSequence
+  }
+
+  return decodeCodePointsArray(res)
+}
+
+// Based on http://stackoverflow.com/a/22747272/680742, the browser with
+// the lowest limit is Chrome, with 0x10000 args.
+// We go 1 magnitude less, for safety
+var MAX_ARGUMENTS_LENGTH = 0x1000
+
+function decodeCodePointsArray (codePoints) {
+  var len = codePoints.length
+  if (len <= MAX_ARGUMENTS_LENGTH) {
+    return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
+  }
+
+  // Decode in chunks to avoid "call stack size exceeded".
+  var res = ''
+  var i = 0
+  while (i < len) {
+    res += String.fromCharCode.apply(
+      String,
+      codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
+    )
+  }
+  return res
+}
+
+function asciiSlice (buf, start, end) {
+  var ret = ''
+  end = Math.min(buf.length, end)
+
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i] & 0x7F)
+  }
+  return ret
+}
+
+function latin1Slice (buf, start, end) {
+  var ret = ''
+  end = Math.min(buf.length, end)
+
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i])
+  }
+  return ret
+}
+
+function hexSlice (buf, start, end) {
+  var len = buf.length
+
+  if (!start || start < 0) start = 0
+  if (!end || end < 0 || end > len) end = len
+
+  var out = ''
+  for (var i = start; i < end; ++i) {
+    out += toHex(buf[i])
+  }
+  return out
+}
+
+function utf16leSlice (buf, start, end) {
+  var bytes = buf.slice(start, end)
+  var res = ''
+  for (var i = 0; i < bytes.length; i += 2) {
+    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256)
+  }
+  return res
+}
+
+Buffer.prototype.slice = function slice (start, end) {
+  var len = this.length
+  start = ~~start
+  end = end === undefined ? len : ~~end
+
+  if (start < 0) {
+    start += len
+    if (start < 0) start = 0
+  } else if (start > len) {
+    start = len
+  }
+
+  if (end < 0) {
+    end += len
+    if (end < 0) end = 0
+  } else if (end > len) {
+    end = len
+  }
+
+  if (end < start) end = start
+
+  var newBuf
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    newBuf = this.subarray(start, end)
+    newBuf.__proto__ = Buffer.prototype
+  } else {
+    var sliceLen = end - start
+    newBuf = new Buffer(sliceLen, undefined)
+    for (var i = 0; i < sliceLen; ++i) {
+      newBuf[i] = this[i + start]
+    }
+  }
+
+  return newBuf
+}
+
+/*
+ * Need to make sure that buffer isn't trying to write out of bounds.
+ */
+function checkOffset (offset, ext, length) {
+  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
+  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
+}
+
+Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
+  }
+
+  return val
+}
+
+Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    checkOffset(offset, byteLength, this.length)
+  }
+
+  var val = this[offset + --byteLength]
+  var mul = 1
+  while (byteLength > 0 && (mul *= 0x100)) {
+    val += this[offset + --byteLength] * mul
+  }
+
+  return val
+}
+
+Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  return this[offset]
+}
+
+Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return this[offset] | (this[offset + 1] << 8)
+}
+
+Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return (this[offset] << 8) | this[offset + 1]
+}
+
+Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return ((this[offset]) |
+      (this[offset + 1] << 8) |
+      (this[offset + 2] << 16)) +
+      (this[offset + 3] * 0x1000000)
+}
+
+Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] * 0x1000000) +
+    ((this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    this[offset + 3])
+}
+
+Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
+  }
+  mul *= 0x80
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+  return val
+}
+
+Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var i = byteLength
+  var mul = 1
+  var val = this[offset + --i]
+  while (i > 0 && (mul *= 0x100)) {
+    val += this[offset + --i] * mul
+  }
+  mul *= 0x80
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+  return val
+}
+
+Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  if (!(this[offset] & 0x80)) return (this[offset])
+  return ((0xff - this[offset] + 1) * -1)
+}
+
+Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset] | (this[offset + 1] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+}
+
+Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset + 1] | (this[offset] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+}
+
+Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset]) |
+    (this[offset + 1] << 8) |
+    (this[offset + 2] << 16) |
+    (this[offset + 3] << 24)
+}
+
+Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] << 24) |
+    (this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    (this[offset + 3])
+}
+
+Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, true, 23, 4)
+}
+
+Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, false, 23, 4)
+}
+
+Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, true, 52, 8)
+}
+
+Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, false, 52, 8)
+}
+
+function checkInt (buf, value, offset, ext, max, min) {
+  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
+  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
+  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+}
+
+Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+    checkInt(this, value, offset, byteLength, maxBytes, 0)
+  }
+
+  var mul = 1
+  var i = 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+    checkInt(this, value, offset, byteLength, maxBytes, 0)
+  }
+
+  var i = byteLength - 1
+  var mul = 1
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+  this[offset] = (value & 0xff)
+  return offset + 1
+}
+
+function objectWriteUInt16 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
+    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
+      (littleEndian ? i : 1 - i) * 8
+  }
+}
+
+Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = (value & 0xff)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
+  return offset + 2
+}
+
+function objectWriteUInt32 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffffffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
+    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
+  }
+}
+
+Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset + 3] = (value >>> 24)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 1] = (value >>> 8)
+    this[offset] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+  }
+
+  var i = 0
+  var mul = 1
+  var sub = 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
+      sub = 1
+    }
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+  }
+
+  var i = byteLength - 1
+  var mul = 1
+  var sub = 0
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
+      sub = 1
+    }
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+  if (value < 0) value = 0xff + value + 1
+  this[offset] = (value & 0xff)
+  return offset + 1
+}
+
+Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = (value & 0xff)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 3] = (value >>> 24)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (value < 0) value = 0xffffffff + value + 1
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
+}
+
+function checkIEEE754 (buf, value, offset, ext, max, min) {
+  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+  if (offset < 0) throw new RangeError('Index out of range')
+}
+
+function writeFloat (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
+  }
+  ieee754.write(buf, value, offset, littleEndian, 23, 4)
+  return offset + 4
+}
+
+Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, true, noAssert)
+}
+
+Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, false, noAssert)
+}
+
+function writeDouble (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
+  }
+  ieee754.write(buf, value, offset, littleEndian, 52, 8)
+  return offset + 8
+}
+
+Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, true, noAssert)
+}
+
+Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, false, noAssert)
+}
+
+// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
+Buffer.prototype.copy = function copy (target, targetStart, start, end) {
+  if (!start) start = 0
+  if (!end && end !== 0) end = this.length
+  if (targetStart >= target.length) targetStart = target.length
+  if (!targetStart) targetStart = 0
+  if (end > 0 && end < start) end = start
+
+  // Copy 0 bytes; we're done
+  if (end === start) return 0
+  if (target.length === 0 || this.length === 0) return 0
+
+  // Fatal error conditions
+  if (targetStart < 0) {
+    throw new RangeError('targetStart out of bounds')
+  }
+  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
+  if (end < 0) throw new RangeError('sourceEnd out of bounds')
+
+  // Are we oob?
+  if (end > this.length) end = this.length
+  if (target.length - targetStart < end - start) {
+    end = target.length - targetStart + start
+  }
+
+  var len = end - start
+  var i
+
+  if (this === target && start < targetStart && targetStart < end) {
+    // descending copy from end
+    for (i = len - 1; i >= 0; --i) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
+    // ascending copy from start
+    for (i = 0; i < len; ++i) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else {
+    Uint8Array.prototype.set.call(
+      target,
+      this.subarray(start, start + len),
+      targetStart
+    )
+  }
+
+  return len
+}
+
+// Usage:
+//    buffer.fill(number[, offset[, end]])
+//    buffer.fill(buffer[, offset[, end]])
+//    buffer.fill(string[, offset[, end]][, encoding])
+Buffer.prototype.fill = function fill (val, start, end, encoding) {
+  // Handle string cases:
+  if (typeof val === 'string') {
+    if (typeof start === 'string') {
+      encoding = start
+      start = 0
+      end = this.length
+    } else if (typeof end === 'string') {
+      encoding = end
+      end = this.length
+    }
+    if (val.length === 1) {
+      var code = val.charCodeAt(0)
+      if (code < 256) {
+        val = code
+      }
+    }
+    if (encoding !== undefined && typeof encoding !== 'string') {
+      throw new TypeError('encoding must be a string')
+    }
+    if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
+      throw new TypeError('Unknown encoding: ' + encoding)
+    }
+  } else if (typeof val === 'number') {
+    val = val & 255
+  }
+
+  // Invalid ranges are not set to a default, so can range check early.
+  if (start < 0 || this.length < start || this.length < end) {
+    throw new RangeError('Out of range index')
+  }
+
+  if (end <= start) {
+    return this
+  }
+
+  start = start >>> 0
+  end = end === undefined ? this.length : end >>> 0
+
+  if (!val) val = 0
+
+  var i
+  if (typeof val === 'number') {
+    for (i = start; i < end; ++i) {
+      this[i] = val
+    }
+  } else {
+    var bytes = Buffer.isBuffer(val)
+      ? val
+      : utf8ToBytes(new Buffer(val, encoding).toString())
+    var len = bytes.length
+    for (i = 0; i < end - start; ++i) {
+      this[i + start] = bytes[i % len]
+    }
+  }
+
+  return this
+}
+
+// HELPER FUNCTIONS
+// ================
+
+var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
+
+function base64clean (str) {
+  // Node strips out invalid characters like \n and \t from the string, base64-js does not
+  str = stringtrim(str).replace(INVALID_BASE64_RE, '')
+  // Node converts strings with length < 2 to ''
+  if (str.length < 2) return ''
+  // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
+  while (str.length % 4 !== 0) {
+    str = str + '='
+  }
+  return str
+}
+
+function stringtrim (str) {
+  if (str.trim) return str.trim()
+  return str.replace(/^\s+|\s+$/g, '')
+}
+
+function toHex (n) {
+  if (n < 16) return '0' + n.toString(16)
+  return n.toString(16)
+}
+
+function utf8ToBytes (string, units) {
+  units = units || Infinity
+  var codePoint
+  var length = string.length
+  var leadSurrogate = null
+  var bytes = []
+
+  for (var i = 0; i < length; ++i) {
+    codePoint = string.charCodeAt(i)
+
+    // is surrogate component
+    if (codePoint > 0xD7FF && codePoint < 0xE000) {
+      // last char was a lead
+      if (!leadSurrogate) {
+        // no lead yet
+        if (codePoint > 0xDBFF) {
+          // unexpected trail
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
+        } else if (i + 1 === length) {
+          // unpaired lead
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
+        }
+
+        // valid lead
+        leadSurrogate = codePoint
+
+        continue
+      }
+
+      // 2 leads in a row
+      if (codePoint < 0xDC00) {
+        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+        leadSurrogate = codePoint
+        continue
+      }
+
+      // valid surrogate pair
+      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
+    } else if (leadSurrogate) {
+      // valid bmp char, but last char was a lead
+      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+    }
+
+    leadSurrogate = null
+
+    // encode utf8
+    if (codePoint < 0x80) {
+      if ((units -= 1) < 0) break
+      bytes.push(codePoint)
+    } else if (codePoint < 0x800) {
+      if ((units -= 2) < 0) break
+      bytes.push(
+        codePoint >> 0x6 | 0xC0,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x10000) {
+      if ((units -= 3) < 0) break
+      bytes.push(
+        codePoint >> 0xC | 0xE0,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x110000) {
+      if ((units -= 4) < 0) break
+      bytes.push(
+        codePoint >> 0x12 | 0xF0,
+        codePoint >> 0xC & 0x3F | 0x80,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else {
+      throw new Error('Invalid code point')
+    }
+  }
+
+  return bytes
+}
+
+function asciiToBytes (str) {
+  var byteArray = []
+  for (var i = 0; i < str.length; ++i) {
+    // Node's code seems to be doing this and not & 0x7F..
+    byteArray.push(str.charCodeAt(i) & 0xFF)
+  }
+  return byteArray
+}
+
+function utf16leToBytes (str, units) {
+  var c, hi, lo
+  var byteArray = []
+  for (var i = 0; i < str.length; ++i) {
+    if ((units -= 2) < 0) break
+
+    c = str.charCodeAt(i)
+    hi = c >> 8
+    lo = c % 256
+    byteArray.push(lo)
+    byteArray.push(hi)
+  }
+
+  return byteArray
+}
+
+function base64ToBytes (str) {
+  return base64.toByteArray(base64clean(str))
+}
+
+function blitBuffer (src, dst, offset, length) {
+  for (var i = 0; i < length; ++i) {
+    if ((i + offset >= dst.length) || (i >= src.length)) break
+    dst[i + offset] = src[i]
+  }
+  return i
+}
+
+function isnan (val) {
+  return val !== val // eslint-disable-line no-self-compare
+}
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js!./node_modules/postcss-loader/index.js?sourceMap!./node_modules/sass-loader/lib/loader.js?sourceMap!./src/components/datatable.component.scss":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -88,7 +2008,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, ".ngx-datatable {\n  display: block;\n  overflow: hidden;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  position: relative;\n  -webkit-transform: translate3d(0, 0, 0);\n  /**\n   * Vertical Scrolling Adjustments\n   */\n  /**\n   * Horizontal Scrolling Adjustments\n   */\n  /**\n   * Fixed Header Height Adjustments\n   */\n  /**\n   * Fixed row height adjustments\n   */\n  /**\n   * Shared Styles\n   */\n  /**\n   * Header Styles\n   */\n  /**\n   * Body Styles\n   */\n  /**\n   * Footer Styles\n   */ }\n  .ngx-datatable [hidden] {\n    display: none !important; }\n  .ngx-datatable *, .ngx-datatable *:before, .ngx-datatable *:after {\n    box-sizing: border-box; }\n  .ngx-datatable.scroll-vertical .datatable-body {\n    overflow-y: auto; }\n    .ngx-datatable.scroll-vertical .datatable-body .datatable-row-wrapper {\n      position: absolute; }\n  .ngx-datatable.scroll-horz .datatable-body {\n    overflow-x: auto;\n    -webkit-overflow-scrolling: touch; }\n  .ngx-datatable.fixed-header .datatable-header .datatable-header-inner {\n    white-space: nowrap; }\n    .ngx-datatable.fixed-header .datatable-header .datatable-header-inner .datatable-header-cell {\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis; }\n  .ngx-datatable.fixed-row .datatable-scroll {\n    white-space: nowrap; }\n    .ngx-datatable.fixed-row .datatable-scroll .datatable-body-row {\n      white-space: nowrap; }\n      .ngx-datatable.fixed-row .datatable-scroll .datatable-body-row .datatable-body-cell {\n        overflow: hidden;\n        white-space: nowrap;\n        text-overflow: ellipsis; }\n  .ngx-datatable .datatable-body-row,\n  .ngx-datatable .datatable-header-inner {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-orient: horizontal;\n    -webkit-box-direction: normal;\n        -ms-flex-direction: row;\n            flex-direction: row;\n    -ms-flex-flow: row;\n    -o-flex-flow: row;\n    flex-flow: row; }\n  .ngx-datatable .datatable-body-cell,\n  .ngx-datatable .datatable-header-cell {\n    vertical-align: top;\n    display: inline-block;\n    line-height: 1.625;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n    -o-user-select: none;\n    user-select: none; }\n    .ngx-datatable .datatable-body-cell:focus,\n    .ngx-datatable .datatable-header-cell:focus {\n      outline: none; }\n  .ngx-datatable .datatable-row-left,\n  .ngx-datatable .datatable-row-right {\n    z-index: 9; }\n  .ngx-datatable .datatable-row-left,\n  .ngx-datatable .datatable-row-center,\n  .ngx-datatable .datatable-row-right {\n    position: relative; }\n  .ngx-datatable .datatable-header {\n    display: block;\n    overflow: hidden; }\n    .ngx-datatable .datatable-header .datatable-header-inner {\n      -webkit-box-align: stretch;\n          -ms-flex-align: stretch;\n              align-items: stretch;\n      -webkit-align-items: stretch; }\n    .ngx-datatable .datatable-header .datatable-header-cell {\n      position: relative;\n      display: inline-block; }\n      .ngx-datatable .datatable-header .datatable-header-cell .datatable-header-cell-wrapper {\n        cursor: pointer; }\n      .ngx-datatable .datatable-header .datatable-header-cell.longpress .datatable-header-cell-wrapper {\n        cursor: move; }\n      .ngx-datatable .datatable-header .datatable-header-cell .sort-btn {\n        line-height: 100%;\n        vertical-align: middle;\n        display: inline-block;\n        cursor: pointer; }\n      .ngx-datatable .datatable-header .datatable-header-cell .resize-handle {\n        display: inline-block;\n        position: absolute;\n        right: 0;\n        top: 0;\n        bottom: 0;\n        width: 5px;\n        padding: 0 4px;\n        visibility: hidden;\n        cursor: ew-resize; }\n      .ngx-datatable .datatable-header .datatable-header-cell.resizeable:hover .resize-handle {\n        visibility: visible; }\n  .ngx-datatable .datatable-body {\n    position: relative;\n    z-index: 10;\n    display: block; }\n    .ngx-datatable .datatable-body .datatable-scroll {\n      display: inline-block; }\n    .ngx-datatable .datatable-body .datatable-row-detail {\n      overflow-y: hidden; }\n    .ngx-datatable .datatable-body .datatable-row-wrapper {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n      -webkit-box-orient: vertical;\n      -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n      flex-direction: column; }\n    .ngx-datatable .datatable-body .datatable-body-row {\n      outline: none; }\n      .ngx-datatable .datatable-body .datatable-body-row > div {\n        display: -webkit-box;\n        display: -ms-flexbox;\n        display: flex; }\n  .ngx-datatable .datatable-footer {\n    display: block;\n    width: 100%; }\n    .ngx-datatable .datatable-footer .datatable-footer-inner {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n      -webkit-box-align: center;\n          -ms-flex-align: center;\n              align-items: center;\n      width: 100%; }\n    .ngx-datatable .datatable-footer .selected-count .page-count {\n      -webkit-box-flex: 1;\n          -ms-flex: 1 1 40%;\n              flex: 1 1 40%; }\n    .ngx-datatable .datatable-footer .selected-count .datatable-pager {\n      -webkit-box-flex: 1;\n          -ms-flex: 1 1 60%;\n              flex: 1 1 60%; }\n    .ngx-datatable .datatable-footer .page-count {\n      -webkit-box-flex: 1;\n          -ms-flex: 1 1 20%;\n              flex: 1 1 20%; }\n    .ngx-datatable .datatable-footer .datatable-pager {\n      -webkit-box-flex: 1;\n          -ms-flex: 1 1 80%;\n              flex: 1 1 80%;\n      text-align: right; }\n      .ngx-datatable .datatable-footer .datatable-pager .pager,\n      .ngx-datatable .datatable-footer .datatable-pager .pager li {\n        padding: 0;\n        margin: 0;\n        display: inline-block;\n        list-style: none; }\n      .ngx-datatable .datatable-footer .datatable-pager .pager li, .ngx-datatable .datatable-footer .datatable-pager .pager li a {\n        outline: none; }\n      .ngx-datatable .datatable-footer .datatable-pager .pager li a {\n        cursor: pointer;\n        display: inline-block; }\n      .ngx-datatable .datatable-footer .datatable-pager .pager li.disabled a {\n        cursor: not-allowed; }\n", ""]);
+exports.push([module.i, ".ngx-datatable {\n  display: block;\n  overflow: hidden;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  position: relative;\n  -webkit-transform: translate3d(0, 0, 0);\n  /**\n   * Vertical Scrolling Adjustments\n   */\n  /**\n   * Horizontal Scrolling Adjustments\n   */\n  /**\n   * Fixed Header Height Adjustments\n   */\n  /**\n   * Fixed row height adjustments\n   */\n  /**\n   * Shared Styles\n   */\n  /**\n   * Header Styles\n   */\n  /**\n   * Body Styles\n   */\n  /**\n   * Footer Styles\n   */ }\n  .ngx-datatable [hidden] {\n    display: none !important; }\n  .ngx-datatable *, .ngx-datatable *:before, .ngx-datatable *:after {\n    -webkit-box-sizing: border-box;\n    box-sizing: border-box; }\n  .ngx-datatable.scroll-vertical .datatable-body {\n    overflow-y: auto; }\n    .ngx-datatable.scroll-vertical .datatable-body .datatable-row-wrapper {\n      position: absolute; }\n  .ngx-datatable.scroll-horz .datatable-body {\n    overflow-x: auto;\n    -webkit-overflow-scrolling: touch; }\n  .ngx-datatable.fixed-header .datatable-header .datatable-header-inner {\n    white-space: nowrap; }\n    .ngx-datatable.fixed-header .datatable-header .datatable-header-inner .datatable-header-cell {\n      white-space: nowrap;\n      overflow: hidden;\n      text-overflow: ellipsis; }\n  .ngx-datatable.fixed-row .datatable-scroll {\n    white-space: nowrap; }\n    .ngx-datatable.fixed-row .datatable-scroll .datatable-body-row {\n      white-space: nowrap; }\n      .ngx-datatable.fixed-row .datatable-scroll .datatable-body-row .datatable-body-cell {\n        overflow: hidden;\n        white-space: nowrap;\n        text-overflow: ellipsis; }\n      .ngx-datatable.fixed-row .datatable-scroll .datatable-body-row .datatable-body-group-cell {\n        overflow: hidden;\n        white-space: nowrap;\n        text-overflow: ellipsis; }\n  .ngx-datatable .datatable-body-row,\n  .ngx-datatable .datatable-header-inner {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-orient: horizontal;\n    -webkit-box-direction: normal;\n        -ms-flex-direction: row;\n            flex-direction: row;\n    -ms-flex-flow: row;\n    -o-flex-flow: row;\n    flex-flow: row; }\n  .ngx-datatable .datatable-body-cell,\n  .ngx-datatable .datatable-header-cell {\n    overflow-x: hidden;\n    vertical-align: top;\n    display: inline-block;\n    line-height: 1.625; }\n    .ngx-datatable .datatable-body-cell:focus,\n    .ngx-datatable .datatable-header-cell:focus {\n      outline: none; }\n  .ngx-datatable .datatable-row-left,\n  .ngx-datatable .datatable-row-right {\n    z-index: 9; }\n  .ngx-datatable .datatable-row-left,\n  .ngx-datatable .datatable-row-center,\n  .ngx-datatable .datatable-row-group,\n  .ngx-datatable .datatable-row-right {\n    position: relative; }\n  .ngx-datatable .datatable-header {\n    display: block;\n    overflow: hidden; }\n    .ngx-datatable .datatable-header .datatable-header-inner {\n      -webkit-box-align: stretch;\n          -ms-flex-align: stretch;\n              align-items: stretch;\n      -webkit-align-items: stretch; }\n    .ngx-datatable .datatable-header .datatable-header-cell {\n      position: relative;\n      display: inline-block; }\n      .ngx-datatable .datatable-header .datatable-header-cell.sortable .datatable-header-cell-wrapper {\n        cursor: pointer; }\n      .ngx-datatable .datatable-header .datatable-header-cell.longpress .datatable-header-cell-wrapper {\n        cursor: move; }\n      .ngx-datatable .datatable-header .datatable-header-cell .sort-btn {\n        line-height: 100%;\n        vertical-align: middle;\n        display: inline-block;\n        cursor: pointer; }\n      .ngx-datatable .datatable-header .datatable-header-cell .resize-handle {\n        display: inline-block;\n        position: absolute;\n        right: 0;\n        top: 0;\n        bottom: 0;\n        width: 5px;\n        padding: 0 4px;\n        visibility: hidden;\n        cursor: ew-resize; }\n      .ngx-datatable .datatable-header .datatable-header-cell.resizeable:hover .resize-handle {\n        visibility: visible; }\n  .ngx-datatable .datatable-body {\n    position: relative;\n    z-index: 10;\n    display: block; }\n    .ngx-datatable .datatable-body .datatable-scroll {\n      display: inline-block; }\n    .ngx-datatable .datatable-body .datatable-row-detail {\n      overflow-y: hidden; }\n    .ngx-datatable .datatable-body .datatable-row-wrapper {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n      -webkit-box-orient: vertical;\n      -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n      flex-direction: column; }\n    .ngx-datatable .datatable-body .datatable-body-row {\n      outline: none; }\n      .ngx-datatable .datatable-body .datatable-body-row > div {\n        display: -webkit-box;\n        display: -ms-flexbox;\n        display: flex; }\n  .ngx-datatable .datatable-footer {\n    display: block;\n    width: 100%; }\n    .ngx-datatable .datatable-footer .datatable-footer-inner {\n      display: -webkit-box;\n      display: -ms-flexbox;\n      display: flex;\n      -webkit-box-align: center;\n          -ms-flex-align: center;\n              align-items: center;\n      width: 100%; }\n    .ngx-datatable .datatable-footer .selected-count .page-count {\n      -webkit-box-flex: 1;\n          -ms-flex: 1 1 40%;\n              flex: 1 1 40%; }\n    .ngx-datatable .datatable-footer .selected-count .datatable-pager {\n      -webkit-box-flex: 1;\n          -ms-flex: 1 1 60%;\n              flex: 1 1 60%; }\n    .ngx-datatable .datatable-footer .page-count {\n      -webkit-box-flex: 1;\n          -ms-flex: 1 1 20%;\n              flex: 1 1 20%; }\n    .ngx-datatable .datatable-footer .datatable-pager {\n      -webkit-box-flex: 1;\n          -ms-flex: 1 1 80%;\n              flex: 1 1 80%;\n      text-align: right; }\n      .ngx-datatable .datatable-footer .datatable-pager .pager,\n      .ngx-datatable .datatable-footer .datatable-pager .pager li {\n        padding: 0;\n        margin: 0;\n        display: inline-block;\n        list-style: none; }\n      .ngx-datatable .datatable-footer .datatable-pager .pager li, .ngx-datatable .datatable-footer .datatable-pager .pager li a {\n        outline: none; }\n      .ngx-datatable .datatable-footer .datatable-pager .pager li a {\n        cursor: pointer;\n        display: inline-block; }\n      .ngx-datatable .datatable-footer .datatable-pager .pager li.disabled a {\n        cursor: not-allowed; }\n", ""]);
 
 // exports
 
@@ -174,6 +2094,7 @@ function toComment(sourceMap) {
 
 	return '/*# ' + data + ' */';
 }
+
 
 
 /***/ }),
@@ -1679,15 +3600,115 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("@angular/core");
 var utils_1 = __webpack_require__("./src/utils/index.ts");
 var types_1 = __webpack_require__("./src/types/index.ts");
-var events_1 = __webpack_require__("./src/events.ts");
 var DataTableBodyCellComponent = (function () {
-    function DataTableBodyCellComponent(element) {
+    function DataTableBodyCellComponent(element, cd) {
+        this.cd = cd;
         this.activate = new core_1.EventEmitter();
         this.isFocused = false;
         this.onCheckboxChangeFn = this.onCheckboxChange.bind(this);
         this.activateFn = this.activate.emit.bind(this.activate);
-        this.element = element.nativeElement;
+        this.cellContext = {
+            onCheckboxChangeFn: this.onCheckboxChangeFn,
+            activateFn: this.activateFn,
+            row: this.row,
+            group: this.group,
+            value: this.value,
+            column: this.column,
+            rowHeight: this.rowHeight,
+            isSelected: this.isSelected,
+            rowIndex: this.rowIndex
+        };
+        this._element = element.nativeElement;
     }
+    Object.defineProperty(DataTableBodyCellComponent.prototype, "group", {
+        get: function () {
+            return this._group;
+        },
+        set: function (group) {
+            this._group = group;
+            this.cellContext.group = group;
+            this.checkValueUpdates();
+            this.cd.markForCheck();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DataTableBodyCellComponent.prototype, "rowHeight", {
+        get: function () {
+            return this._rowHeight;
+        },
+        set: function (val) {
+            this._rowHeight = val;
+            this.cellContext.rowHeight = val;
+            this.checkValueUpdates();
+            this.cd.markForCheck();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DataTableBodyCellComponent.prototype, "isSelected", {
+        get: function () {
+            return this._isSelected;
+        },
+        set: function (val) {
+            this._isSelected = val;
+            this.cellContext.isSelected = val;
+            this.cd.markForCheck();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DataTableBodyCellComponent.prototype, "expanded", {
+        get: function () {
+            return this._expanded;
+        },
+        set: function (val) {
+            this._expanded = val;
+            this.cellContext.expanded = val;
+            this.cd.markForCheck();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DataTableBodyCellComponent.prototype, "rowIndex", {
+        get: function () {
+            return this._rowIndex;
+        },
+        set: function (val) {
+            this._rowIndex = val;
+            this.cellContext.rowIndex = val;
+            this.checkValueUpdates();
+            this.cd.markForCheck();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DataTableBodyCellComponent.prototype, "column", {
+        get: function () {
+            return this._column;
+        },
+        set: function (column) {
+            this._column = column;
+            this.cellContext.column = column;
+            this.checkValueUpdates();
+            this.cd.markForCheck();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DataTableBodyCellComponent.prototype, "row", {
+        get: function () {
+            return this._row;
+        },
+        set: function (row) {
+            this._row = row;
+            this.cellContext.row = row;
+            this.checkValueUpdates();
+            this.cd.markForCheck();
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(DataTableBodyCellComponent.prototype, "sorts", {
         get: function () {
             return this._sorts;
@@ -1709,8 +3730,10 @@ var DataTableBodyCellComponent = (function () {
                 else if (typeof this.column.cellClass === 'function') {
                     var res = this.column.cellClass({
                         row: this.row,
+                        group: this.group,
                         column: this.column,
-                        value: this.value
+                        value: this.value,
+                        rowHeight: this.rowHeight
                     });
                     if (typeof res === 'string') {
                         cls += res;
@@ -1755,24 +3778,34 @@ var DataTableBodyCellComponent = (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(DataTableBodyCellComponent.prototype, "value", {
-        get: function () {
-            if (!this.row || !this.column)
-                return '';
-            var val = this.column.$$valueGetter(this.row, this.column.prop);
-            var userPipe = this.column.pipe;
-            if (userPipe)
-                return userPipe.transform(val);
-            if (val !== undefined)
-                return val;
-            return '';
-        },
-        enumerable: true,
-        configurable: true
-    });
+    DataTableBodyCellComponent.prototype.ngDoCheck = function () {
+        this.checkValueUpdates();
+    };
     DataTableBodyCellComponent.prototype.ngOnDestroy = function () {
         if (this.cellTemplate) {
             this.cellTemplate.clear();
+        }
+    };
+    DataTableBodyCellComponent.prototype.checkValueUpdates = function () {
+        var value = '';
+        if (!this.row || !this.column) {
+            value = '';
+        }
+        else {
+            var val = this.column.$$valueGetter(this.row, this.column.prop);
+            var userPipe = this.column.pipe;
+            if (userPipe) {
+                value = userPipe.transform(val);
+            }
+            else if (value !== undefined) {
+                value = val;
+            }
+        }
+        if (this.value !== value) {
+            this.value = value;
+            this.cellContext.value = value;
+            this.sanitizedValue = value !== null && value !== undefined ? this.stripHtml(value) : value;
+            this.cd.markForCheck();
         }
     };
     DataTableBodyCellComponent.prototype.onFocus = function () {
@@ -1786,9 +3819,11 @@ var DataTableBodyCellComponent = (function () {
             type: 'click',
             event: event,
             row: this.row,
+            group: this.group,
+            rowHeight: this.rowHeight,
             column: this.column,
             value: this.value,
-            cellElement: this.element
+            cellElement: this._element
         });
     };
     DataTableBodyCellComponent.prototype.onDblClick = function (event) {
@@ -1796,14 +3831,16 @@ var DataTableBodyCellComponent = (function () {
             type: 'dblclick',
             event: event,
             row: this.row,
+            group: this.group,
+            rowHeight: this.rowHeight,
             column: this.column,
             value: this.value,
-            cellElement: this.element
+            cellElement: this._element
         });
     };
     DataTableBodyCellComponent.prototype.onKeyDown = function (event) {
         var keyCode = event.keyCode;
-        var isTargetCell = event.target === this.element;
+        var isTargetCell = event.target === this._element;
         var isAction = keyCode === utils_1.Keys.return ||
             keyCode === utils_1.Keys.down ||
             keyCode === utils_1.Keys.up ||
@@ -1816,9 +3853,11 @@ var DataTableBodyCellComponent = (function () {
                 type: 'keydown',
                 event: event,
                 row: this.row,
+                group: this.group,
+                rowHeight: this.rowHeight,
                 column: this.column,
                 value: this.value,
-                cellElement: this.element
+                cellElement: this._element
             });
         }
     };
@@ -1827,9 +3866,11 @@ var DataTableBodyCellComponent = (function () {
             type: 'checkbox',
             event: event,
             row: this.row,
+            group: this.group,
+            rowHeight: this.rowHeight,
             column: this.column,
             value: this.value,
-            cellElement: this.element
+            cellElement: this._element
         });
     };
     DataTableBodyCellComponent.prototype.calcSortDir = function (sorts) {
@@ -1842,22 +3883,46 @@ var DataTableBodyCellComponent = (function () {
         if (sort)
             return sort.dir;
     };
+    DataTableBodyCellComponent.prototype.stripHtml = function (html) {
+        if (!html.replace)
+            return html;
+        return html.replace(/<\/?[^>]+(>|$)/g, '');
+    };
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Object)
-    ], DataTableBodyCellComponent.prototype, "row", void 0);
+        __metadata("design:type", Object),
+        __metadata("design:paramtypes", [Object])
+    ], DataTableBodyCellComponent.prototype, "group", null);
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Object)
-    ], DataTableBodyCellComponent.prototype, "column", void 0);
+        __metadata("design:type", Number),
+        __metadata("design:paramtypes", [Number])
+    ], DataTableBodyCellComponent.prototype, "rowHeight", null);
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Number)
-    ], DataTableBodyCellComponent.prototype, "rowHeight", void 0);
+        __metadata("design:type", Boolean),
+        __metadata("design:paramtypes", [Boolean])
+    ], DataTableBodyCellComponent.prototype, "isSelected", null);
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Boolean)
-    ], DataTableBodyCellComponent.prototype, "isSelected", void 0);
+        __metadata("design:type", Boolean),
+        __metadata("design:paramtypes", [Boolean])
+    ], DataTableBodyCellComponent.prototype, "expanded", null);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Number),
+        __metadata("design:paramtypes", [Number])
+    ], DataTableBodyCellComponent.prototype, "rowIndex", null);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Object),
+        __metadata("design:paramtypes", [Object])
+    ], DataTableBodyCellComponent.prototype, "column", null);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Object),
+        __metadata("design:paramtypes", [Object])
+    ], DataTableBodyCellComponent.prototype, "row", null);
     __decorate([
         core_1.Input(),
         __metadata("design:type", Array),
@@ -1901,30 +3966,28 @@ var DataTableBodyCellComponent = (function () {
     __decorate([
         core_1.HostListener('click', ['$event']),
         __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
+        __metadata("design:paramtypes", [MouseEvent]),
         __metadata("design:returntype", void 0)
     ], DataTableBodyCellComponent.prototype, "onClick", null);
     __decorate([
         core_1.HostListener('dblclick', ['$event']),
         __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
+        __metadata("design:paramtypes", [MouseEvent]),
         __metadata("design:returntype", void 0)
     ], DataTableBodyCellComponent.prototype, "onDblClick", null);
     __decorate([
         core_1.HostListener('keydown', ['$event']),
         __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
+        __metadata("design:paramtypes", [KeyboardEvent]),
         __metadata("design:returntype", void 0)
     ], DataTableBodyCellComponent.prototype, "onKeyDown", null);
     DataTableBodyCellComponent = __decorate([
         core_1.Component({
             selector: 'datatable-body-cell',
-            template: "\n    <div class=\"datatable-body-cell-label\">\n      <label\n        *ngIf=\"column.checkboxable\" \n        class=\"datatable-checkbox\">\n        <input \n          type=\"checkbox\"\n          [checked]=\"isSelected\"\n          (click)=\"onCheckboxChange($event)\" \n        />\n      </label>\n      <span\n        *ngIf=\"!column.cellTemplate\"\n        [title]=\"value\"\n        [innerHTML]=\"value\">\n      </span>\n      <ng-template #cellTemplate\n        *ngIf=\"column.cellTemplate\"\n        [ngTemplateOutlet]=\"column.cellTemplate\"\n        [ngOutletContext]=\"{\n          value: value,\n          row: row,\n          column: column,\n          isSelected: isSelected,\n          onCheckboxChangeFn: onCheckboxChangeFn,\n          activateFn: activateFn\n        }\">\n      </ng-template>\n    </div>\n  ",
-            host: {
-                class: 'datatable-body-cell'
-            }
+            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
+            template: "\n    <div class=\"datatable-body-cell-label\">\n      <label\n        *ngIf=\"column.checkboxable\"\n        class=\"datatable-checkbox\">\n        <input\n          type=\"checkbox\"\n          [checked]=\"isSelected\"\n          (click)=\"onCheckboxChange($event)\"\n        />\n      </label>\n      <span\n        *ngIf=\"!column.cellTemplate\"\n        [title]=\"sanitizedValue\"\n        [innerHTML]=\"value\">\n      </span>\n      <ng-template #cellTemplate\n        *ngIf=\"column.cellTemplate\"\n        [ngTemplateOutlet]=\"column.cellTemplate\"\n        [ngTemplateOutletContext]=\"cellContext\">\n      </ng-template>\n    </div>\n  "
         }),
-        __metadata("design:paramtypes", [core_1.ElementRef])
+        __metadata("design:paramtypes", [core_1.ElementRef, core_1.ChangeDetectorRef])
     ], DataTableBodyCellComponent);
     return DataTableBodyCellComponent;
 }());
@@ -1933,7 +3996,7 @@ exports.DataTableBodyCellComponent = DataTableBodyCellComponent;
 
 /***/ }),
 
-/***/ "./src/components/body/body-row-wrapper.component.ts":
+/***/ "./src/components/body/body-group-header-template.directive.ts":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1949,15 +4012,183 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("@angular/core");
+var DatatableGroupHeaderTemplateDirective = (function () {
+    function DatatableGroupHeaderTemplateDirective(template) {
+        this.template = template;
+    }
+    DatatableGroupHeaderTemplateDirective = __decorate([
+        core_1.Directive({
+            selector: '[ngx-datatable-group-header-template]'
+        }),
+        __metadata("design:paramtypes", [core_1.TemplateRef])
+    ], DatatableGroupHeaderTemplateDirective);
+    return DatatableGroupHeaderTemplateDirective;
+}());
+exports.DatatableGroupHeaderTemplateDirective = DatatableGroupHeaderTemplateDirective;
+
+
+/***/ }),
+
+/***/ "./src/components/body/body-group-header.directive.ts":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = __webpack_require__("@angular/core");
+var body_group_header_template_directive_1 = __webpack_require__("./src/components/body/body-group-header-template.directive.ts");
+var DatatableGroupHeaderDirective = (function () {
+    function DatatableGroupHeaderDirective() {
+        /**
+         * The detail row height is required especially
+         * when virtual scroll is enabled.
+         */
+        this.rowHeight = 0;
+        /**
+         * Group visbility was toggled.
+         */
+        this.toggle = new core_1.EventEmitter();
+    }
+    /**
+     * Toggle the expansion of a group
+     */
+    DatatableGroupHeaderDirective.prototype.toggleExpandGroup = function (group) {
+        this.toggle.emit({
+            type: 'group',
+            value: group
+        });
+    };
+    /**
+     * API method to expand all groups.
+     */
+    DatatableGroupHeaderDirective.prototype.expandAllGroups = function () {
+        this.toggle.emit({
+            type: 'all',
+            value: true
+        });
+    };
+    /**
+     * API method to collapse all groups.
+     */
+    DatatableGroupHeaderDirective.prototype.collapseAllGroups = function () {
+        this.toggle.emit({
+            type: 'all',
+            value: false
+        });
+    };
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Object)
+    ], DatatableGroupHeaderDirective.prototype, "rowHeight", void 0);
+    __decorate([
+        core_1.Input(),
+        core_1.ContentChild(body_group_header_template_directive_1.DatatableGroupHeaderTemplateDirective, { read: core_1.TemplateRef }),
+        __metadata("design:type", core_1.TemplateRef)
+    ], DatatableGroupHeaderDirective.prototype, "template", void 0);
+    __decorate([
+        core_1.Output(),
+        __metadata("design:type", core_1.EventEmitter)
+    ], DatatableGroupHeaderDirective.prototype, "toggle", void 0);
+    DatatableGroupHeaderDirective = __decorate([
+        core_1.Directive({ selector: 'ngx-datatable-group-header' })
+    ], DatatableGroupHeaderDirective);
+    return DatatableGroupHeaderDirective;
+}());
+exports.DatatableGroupHeaderDirective = DatatableGroupHeaderDirective;
+
+
+/***/ }),
+/***/ "./src/components/body/body-row-wrapper.component.ts":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = __webpack_require__(0);
 var events_1 = __webpack_require__("./src/events.ts");
 var DataTableRowWrapperComponent = (function () {
-    function DataTableRowWrapperComponent() {
-        this.expanded = false;
+    function DataTableRowWrapperComponent(cd, differs) {
+        this.cd = cd;
+        this.differs = differs;
         this.rowContextmenu = new core_1.EventEmitter(false);
+        this.groupContext = {
+            group: this.row,
+            expanded: this.expanded,
+            rowIndex: this.rowIndex
+        };
+        this.rowContext = {
+            row: this.row,
+            expanded: this.expanded,
+            rowIndex: this.rowIndex
+        };
+        this._expanded = false;
+        this.rowDiffer = differs.find({}).create();
     }
+    Object.defineProperty(DataTableRowWrapperComponent.prototype, "rowIndex", {
+        get: function () {
+            return this._rowIndex;
+        },
+        set: function (val) {
+            this._rowIndex = val;
+            this.rowContext.rowIndex = val;
+            this.groupContext.rowIndex = val;
+            this.cd.markForCheck();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DataTableRowWrapperComponent.prototype, "expanded", {
+        get: function () {
+            return this._expanded;
+        },
+        set: function (val) {
+            this._expanded = val;
+            this.groupContext.expanded = val;
+            this.rowContext.expanded = val;
+            this.cd.markForCheck();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    DataTableRowWrapperComponent.prototype.ngDoCheck = function () {
+        if (this.rowDiffer.diff(this.row)) {
+            this.rowContext.row = this.row;
+            this.groupContext.group = this.row;
+            this.cd.markForCheck();
+        }
+    };
     DataTableRowWrapperComponent.prototype.onContextmenu = function ($event) {
         this.rowContextmenu.emit({ event: $event, row: this.row });
     };
+    DataTableRowWrapperComponent.prototype.getGroupHeaderStyle = function (group) {
+        var styles = {};
+        styles['transform'] = 'translate3d(' + this.offsetX + 'px, 0px, 0px)';
+        styles['backface-visibility'] = 'hidden';
+        styles['width'] = this.innerWidth;
+        return styles;
+    };
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Number)
+    ], DataTableRowWrapperComponent.prototype, "innerWidth", void 0);
     __decorate([
         core_1.Input(),
         __metadata("design:type", Object)
@@ -1965,33 +4196,53 @@ var DataTableRowWrapperComponent = (function () {
     __decorate([
         core_1.Input(),
         __metadata("design:type", Object)
-    ], DataTableRowWrapperComponent.prototype, "detailRowHeight", void 0);
+    ], DataTableRowWrapperComponent.prototype, "groupHeader", void 0);
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Boolean)
-    ], DataTableRowWrapperComponent.prototype, "expanded", void 0);
+        __metadata("design:type", Number)
+    ], DataTableRowWrapperComponent.prototype, "offsetX", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Object)
+    ], DataTableRowWrapperComponent.prototype, "detailRowHeight", void 0);
     __decorate([
         core_1.Input(),
         __metadata("design:type", Object)
     ], DataTableRowWrapperComponent.prototype, "row", void 0);
     __decorate([
+        core_1.Input(),
+        __metadata("design:type", Object)
+    ], DataTableRowWrapperComponent.prototype, "groupedRows", void 0);
+    __decorate([
         core_1.Output(),
         __metadata("design:type", Object)
     ], DataTableRowWrapperComponent.prototype, "rowContextmenu", void 0);
     __decorate([
+        core_1.Input(),
+        __metadata("design:type", Number),
+        __metadata("design:paramtypes", [Number])
+    ], DataTableRowWrapperComponent.prototype, "rowIndex", null);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Boolean),
+        __metadata("design:paramtypes", [Boolean])
+    ], DataTableRowWrapperComponent.prototype, "expanded", null);
+    __decorate([
         core_1.HostListener('contextmenu', ['$event']),
         __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
+        __metadata("design:paramtypes", [MouseEvent]),
         __metadata("design:returntype", void 0)
     ], DataTableRowWrapperComponent.prototype, "onContextmenu", null);
     DataTableRowWrapperComponent = __decorate([
         core_1.Component({
             selector: 'datatable-row-wrapper',
-            template: "\n    <ng-content></ng-content>\n    <div \n      *ngIf=\"expanded\"\n      [style.height.px]=\"detailRowHeight\" \n      class=\"datatable-row-detail\">\n      <ng-template\n        *ngIf=\"rowDetail && rowDetail.template\"\n        [ngTemplateOutlet]=\"rowDetail.template\"\n        [ngOutletContext]=\"{ row: row }\">\n      </ng-template>\n    </div>\n  ",
+            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
+            template: "\n    <div \n      *ngIf=\"groupHeader && groupHeader.template\"\n      class=\"datatable-group-header\"\n      [ngStyle]=\"getGroupHeaderStyle()\">\n      <ng-template\n        *ngIf=\"groupHeader && groupHeader.template\"\n        [ngTemplateOutlet]=\"groupHeader.template\"\n        [ngTemplateOutletContext]=\"groupContext\">\n      </ng-template>\n    </div>\n    <ng-content \n      *ngIf=\"(groupHeader && groupHeader.template && expanded) || \n             (!groupHeader || !groupHeader.template)\">\n    </ng-content>\n    <div\n      *ngIf=\"rowDetail && rowDetail.template && expanded\"\n      [style.height.px]=\"detailRowHeight\"\n      class=\"datatable-row-detail\">\n      <ng-template\n        *ngIf=\"rowDetail && rowDetail.template\"\n        [ngTemplateOutlet]=\"rowDetail.template\"\n        [ngTemplateOutletContext]=\"rowContext\">\n      </ng-template>\n    </div>\n  ",
             host: {
                 class: 'datatable-row-wrapper'
             }
-        })
+        }),
+        __metadata("design:paramtypes", [core_1.ChangeDetectorRef, core_1.KeyValueDiffers])
     ], DataTableRowWrapperComponent);
     return DataTableRowWrapperComponent;
 }());
@@ -2018,12 +4269,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("@angular/core");
 var utils_1 = __webpack_require__("./src/utils/index.ts");
 var services_1 = __webpack_require__("./src/services/index.ts");
-var events_1 = __webpack_require__("./src/events.ts");
 var DataTableBodyRowComponent = (function () {
-    function DataTableBodyRowComponent(scrollbarHelper, element) {
+    function DataTableBodyRowComponent(differs, scrollbarHelper, cd, element) {
+        this.differs = differs;
         this.scrollbarHelper = scrollbarHelper;
+        this.cd = cd;
         this.activate = new core_1.EventEmitter();
         this.element = element.nativeElement;
+        this.rowDiffer = differs.find({}).create();
     }
     Object.defineProperty(DataTableBodyRowComponent.prototype, "columns", {
         get: function () {
@@ -2041,6 +4294,10 @@ var DataTableBodyRowComponent = (function () {
             return this._innerWidth;
         },
         set: function (val) {
+            if (this._columns) {
+                var colByPin = utils_1.columnsByPin(this._columns);
+                this.columnGroupWidths = utils_1.columnGroupWidths(colByPin, colByPin);
+            }
             this._innerWidth = val;
             this.recalculateColumns();
         },
@@ -2052,9 +4309,9 @@ var DataTableBodyRowComponent = (function () {
             var cls = 'datatable-body-row';
             if (this.isSelected)
                 cls += ' active';
-            if (this.row.$$index % 2 !== 0)
+            if (this.rowIndex % 2 !== 0)
                 cls += ' datatable-row-odd';
-            if (this.row.$$index % 2 === 0)
+            if (this.rowIndex % 2 === 0)
                 cls += ' datatable-row-even';
             if (this.rowClass) {
                 var res = this.rowClass(this.row);
@@ -2082,6 +4339,11 @@ var DataTableBodyRowComponent = (function () {
         enumerable: true,
         configurable: true
     });
+    DataTableBodyRowComponent.prototype.ngDoCheck = function () {
+        if (this.rowDiffer.diff(this.row)) {
+            this.cd.markForCheck();
+        }
+    };
     DataTableBodyRowComponent.prototype.trackByGroups = function (index, colGroup) {
         return colGroup.type;
     };
@@ -2130,11 +4392,20 @@ var DataTableBodyRowComponent = (function () {
             });
         }
     };
+    DataTableBodyRowComponent.prototype.onMouseenter = function (event) {
+        this.activate.emit({
+            type: 'mouseenter',
+            event: event,
+            row: this.row,
+            rowElement: this.element
+        });
+    };
     DataTableBodyRowComponent.prototype.recalculateColumns = function (val) {
         if (val === void 0) { val = this.columns; }
-        var colsByPin = utils_1.columnsByPin(val);
-        this.columnsByPin = utils_1.columnsByPinArr(val);
-        this.columnGroupWidths = utils_1.columnGroupWidths(colsByPin, val);
+        this._columns = val;
+        var colsByPin = utils_1.columnsByPin(this._columns);
+        this.columnsByPin = utils_1.allColumnsByPinArr(this._columns);
+        this.columnGroupWidths = utils_1.columnGroupWidths(colsByPin, this._columns);
     };
     __decorate([
         core_1.Input(),
@@ -2148,6 +4419,10 @@ var DataTableBodyRowComponent = (function () {
     ], DataTableBodyRowComponent.prototype, "innerWidth", null);
     __decorate([
         core_1.Input(),
+        __metadata("design:type", Boolean)
+    ], DataTableBodyRowComponent.prototype, "expanded", void 0);
+    __decorate([
+        core_1.Input(),
         __metadata("design:type", Object)
     ], DataTableBodyRowComponent.prototype, "rowClass", void 0);
     __decorate([
@@ -2156,12 +4431,20 @@ var DataTableBodyRowComponent = (function () {
     ], DataTableBodyRowComponent.prototype, "row", void 0);
     __decorate([
         core_1.Input(),
+        __metadata("design:type", Object)
+    ], DataTableBodyRowComponent.prototype, "group", void 0);
+    __decorate([
+        core_1.Input(),
         __metadata("design:type", Number)
     ], DataTableBodyRowComponent.prototype, "offsetX", void 0);
     __decorate([
         core_1.Input(),
         __metadata("design:type", Boolean)
     ], DataTableBodyRowComponent.prototype, "isSelected", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Number)
+    ], DataTableBodyRowComponent.prototype, "rowIndex", void 0);
     __decorate([
         core_1.HostBinding('class'),
         __metadata("design:type", Object),
@@ -2184,15 +4467,25 @@ var DataTableBodyRowComponent = (function () {
     __decorate([
         core_1.HostListener('keydown', ['$event']),
         __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
+        __metadata("design:paramtypes", [KeyboardEvent]),
         __metadata("design:returntype", void 0)
     ], DataTableBodyRowComponent.prototype, "onKeyDown", null);
+    __decorate([
+        core_1.HostListener('mouseenter', ['$event']),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Event]),
+        __metadata("design:returntype", void 0)
+    ], DataTableBodyRowComponent.prototype, "onMouseenter", null);
     DataTableBodyRowComponent = __decorate([
         core_1.Component({
             selector: 'datatable-body-row',
-            template: "\n    <div\n      *ngFor=\"let colGroup of columnsByPin; let i = index; trackBy: trackByGroups\"\n      class=\"datatable-row-{{colGroup.type}} datatable-row-group\"\n      [ngStyle]=\"stylesByGroup(colGroup.type)\">\n      <datatable-body-cell\n        *ngFor=\"let column of colGroup.columns; let ii = index; trackBy: columnTrackingFn\"\n        tabindex=\"-1\"\n        [row]=\"row\"\n        [isSelected]=\"isSelected\"\n        [column]=\"column\"\n        [rowHeight]=\"rowHeight\"\n        (activate)=\"onActivate($event, ii)\">\n      </datatable-body-cell>\n    </div>\n  "
+            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
+            template: "\n    <div\n      *ngFor=\"let colGroup of columnsByPin; let i = index; trackBy: trackByGroups\"\n      class=\"datatable-row-{{colGroup.type}} datatable-row-group\"\n      [ngStyle]=\"stylesByGroup(colGroup.type)\">\n      <datatable-body-cell\n        *ngFor=\"let column of colGroup.columns; let ii = index; trackBy: columnTrackingFn\"\n        tabindex=\"-1\"\n        [row]=\"row\"\n        [group]=\"group\"\n        [expanded]=\"expanded\"\n        [isSelected]=\"isSelected\"\n        [rowIndex]=\"rowIndex\"\n        [column]=\"column\"\n        [rowHeight]=\"rowHeight\"\n        (activate)=\"onActivate($event, ii)\">\n      </datatable-body-cell>\n    </div>      \n  "
         }),
-        __metadata("design:paramtypes", [services_1.ScrollbarHelper, core_1.ElementRef])
+        __metadata("design:paramtypes", [core_1.KeyValueDiffers,
+            services_1.ScrollbarHelper,
+            core_1.ChangeDetectorRef,
+            core_1.ElementRef])
     ], DataTableBodyRowComponent);
     return DataTableBodyRowComponent;
 }());
@@ -2223,11 +4516,10 @@ var scroller_component_1 = __webpack_require__("./src/components/body/scroller.c
 var DataTableBodyComponent = (function () {
     /**
      * Creates an instance of DataTableBodyComponent.
-     *
-     * @memberOf DataTableBodyComponent
      */
-    function DataTableBodyComponent() {
+    function DataTableBodyComponent(cd) {
         var _this = this;
+        this.cd = cd;
         this.selected = [];
         this.scroll = new core_1.EventEmitter();
         this.page = new core_1.EventEmitter();
@@ -2239,14 +4531,10 @@ var DataTableBodyComponent = (function () {
         this.temp = [];
         this.offsetY = 0;
         this.indexes = {};
+        this.rowIndexes = new Map();
+        this.rowExpansions = new Map();
         /**
          * Get the height of the detail row.
-         *
-         * @param {*} [row]
-         * @param {*} [index]
-         * @returns {number}
-         *
-         * @memberOf DataTableBodyComponent
          */
         this.getDetailRowHeight = function (row, index) {
             if (!_this.rowDetail)
@@ -2256,11 +4544,12 @@ var DataTableBodyComponent = (function () {
         };
         // declare fn here so we can get access to the `this` property
         this.rowTrackingFn = function (index, row) {
+            var idx = this.getRowIndex(row);
             if (this.trackByProp) {
-                return row.$$index + "-" + this.trackByProp;
+                return idx + "-" + this.trackByProp;
             }
             else {
-                return row.$$index;
+                return idx;
             }
         }.bind(this);
     }
@@ -2281,6 +4570,7 @@ var DataTableBodyComponent = (function () {
         },
         set: function (val) {
             this._rows = val;
+            this.rowExpansions.clear();
             this.recalcLayout();
         },
         enumerable: true,
@@ -2351,10 +4641,6 @@ var DataTableBodyComponent = (function () {
     Object.defineProperty(DataTableBodyComponent.prototype, "selectEnabled", {
         /**
          * Returns if selection is enabled.
-         *
-         * @readonly
-         * @type {boolean}
-         * @memberOf DataTableBodyComponent
          */
         get: function () {
             return !!this.selectionType;
@@ -2367,10 +4653,6 @@ var DataTableBodyComponent = (function () {
          * Property that would calculate the height of scroll bar
          * based on the row heights cache for virtual scroll. Other scenarios
          * calculate scroll height automatically (as height will be undefined).
-         *
-         * @readonly
-         * @type {number}
-         * @memberOf DataTableBodyComponent
          */
         get: function () {
             if (this.scrollbarV) {
@@ -2382,8 +4664,6 @@ var DataTableBodyComponent = (function () {
     });
     /**
      * Called after the constructor, initializing input properties
-     *
-     * @memberOf DataTableBodyComponent
      */
     DataTableBodyComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -2395,24 +4675,40 @@ var DataTableBodyComponent = (function () {
                     _this.toggleRowExpansion(value);
                 if (type === 'all')
                     _this.toggleAllRows(value);
+                // Refresh rows after toggle
+                // Fixes #883
+                _this.updateIndexes();
+                _this.updateRows();
+                _this.cd.markForCheck();
+            });
+        }
+        if (this.groupHeader) {
+            this.listener = this.groupHeader.toggle
+                .subscribe(function (_a) {
+                var type = _a.type, value = _a.value;
+                if (type === 'group')
+                    _this.toggleRowExpansion(value);
+                if (type === 'all')
+                    _this.toggleAllRows(value);
+                // Refresh rows after toggle
+                // Fixes #883
+                _this.updateIndexes();
+                _this.updateRows();
+                _this.cd.markForCheck();
             });
         }
     };
     /**
      * Called once, before the instance is destroyed.
-     *
-     * @memberOf DataTableBodyComponent
      */
     DataTableBodyComponent.prototype.ngOnDestroy = function () {
         if (this.rowDetail)
             this.listener.unsubscribe();
+        if (this.groupHeader)
+            this.listener.unsubscribe();
     };
     /**
      * Updates the Y offset given a new offset.
-     *
-     * @param {number} [offset]
-     *
-     * @memberOf DataTableBodyComponent
      */
     DataTableBodyComponent.prototype.updateOffsetY = function (offset) {
         // scroller is missing on empty table
@@ -2428,10 +4724,6 @@ var DataTableBodyComponent = (function () {
     /**
      * Body was scrolled, this is mainly useful for
      * when a user is server-side pagination via virtual scroll.
-     *
-     * @param {*} event
-     *
-     * @memberOf DataTableBodyComponent
      */
     DataTableBodyComponent.prototype.onBodyScroll = function (event) {
         var scrollYPos = event.scrollYPos;
@@ -2452,10 +4744,6 @@ var DataTableBodyComponent = (function () {
     };
     /**
      * Updates the page given a direction.
-     *
-     * @param {string} direction
-     *
-     * @memberOf DataTableBodyComponent
      */
     DataTableBodyComponent.prototype.updatePage = function (direction) {
         var offset = this.indexes.first / this.pageSize;
@@ -2471,32 +4759,47 @@ var DataTableBodyComponent = (function () {
     };
     /**
      * Updates the rows in the view port
-     *
-     * @memberOf DataTableBodyComponent
      */
     DataTableBodyComponent.prototype.updateRows = function () {
         var _a = this.indexes, first = _a.first, last = _a.last;
         var rowIndex = first;
         var idx = 0;
         var temp = [];
-        while (rowIndex < last && rowIndex < this.rowCount) {
-            var row = this.rows[rowIndex];
-            if (row) {
-                row.$$index = rowIndex;
-                temp[idx] = row;
+        this.rowIndexes.clear();
+        // if grouprowsby has been specified treat row paging 
+        // parameters as group paging parameters ie if limit 10 has been 
+        // specified treat it as 10 groups rather than 10 rows    
+        if (this.groupedRows) {
+            var maxRowsPerGroup = 3;
+            // if there is only one group set the maximum number of 
+            // rows per group the same as the total number of rows
+            if (this.groupedRows.length === 1) {
+                maxRowsPerGroup = this.groupedRows[0].value.length;
             }
-            idx++;
-            rowIndex++;
+            while (rowIndex < last && rowIndex < this.groupedRows.length) {
+                // Add the groups into this page
+                var group = this.groupedRows[rowIndex];
+                temp[idx] = group;
+                idx++;
+                // Group index in this context
+                rowIndex++;
+            }
+        }
+        else {
+            while (rowIndex < last && rowIndex < this.rowCount) {
+                var row = this.rows[rowIndex];
+                if (row) {
+                    this.rowIndexes.set(row, rowIndex);
+                    temp[idx] = row;
+                }
+                idx++;
+                rowIndex++;
+            }
         }
         this.temp = temp;
     };
     /**
      * Get the row height
-     *
-     * @param {*} row
-     * @returns {number}
-     *
-     * @memberOf DataTableBodyComponent
      */
     DataTableBodyComponent.prototype.getRowHeight = function (row) {
         var rowHeight = this.rowHeight;
@@ -2507,17 +4810,25 @@ var DataTableBodyComponent = (function () {
         return rowHeight;
     };
     /**
+     * @param group the group with all rows
+     */
+    DataTableBodyComponent.prototype.getGroupHeight = function (group) {
+        var rowHeight = 0;
+        if (group.value) {
+            for (var index = 0; index < group.value.length; index++) {
+                rowHeight += this.getRowAndDetailHeight(group.value[index]);
+            }
+        }
+        return rowHeight;
+    };
+    /**
      * Calculate row height based on the expanded state of the row.
-     *
-     * @param {*} row the row for which the height need to be calculated.
-     * @returns {number} height of the row.
-     *
-     * @memberOf DataTableBodyComponent
      */
     DataTableBodyComponent.prototype.getRowAndDetailHeight = function (row) {
         var rowHeight = this.getRowHeight(row);
+        var expanded = this.rowExpansions.get(row);
         // Adding detail row height if its expanded.
-        if (row.$$expanded === 1) {
+        if (expanded === 1) {
             rowHeight += this.getDetailRowHeight(row);
         }
         return rowHeight;
@@ -2537,18 +4848,27 @@ var DataTableBodyComponent = (function () {
      * case the positionY of the translate3d for row2 would be the sum of all the
      * heights of the rows before it (i.e. row0 and row1).
      *
-     * @param {*} row The row that needs to be placed in the 2D space.
+     * @param {*} rows The row that needs to be placed in the 2D space.
      * @returns {*} Returns the CSS3 style to be applied
      *
      * @memberOf DataTableBodyComponent
      */
-    DataTableBodyComponent.prototype.getRowsStyles = function (row) {
-        var rowHeight = this.getRowAndDetailHeight(row);
-        var styles = {
-            height: rowHeight + 'px'
-        };
+    DataTableBodyComponent.prototype.getRowsStyles = function (rows) {
+        var styles = {};
+        // only add styles for the group if there is a group
+        if (this.groupedRows) {
+            styles['width'] = this.columnGroupWidths.total;
+        }
         if (this.scrollbarV) {
-            var idx = row ? row.$$index : 0;
+            var idx = 0;
+            if (this.groupedRows) {
+                // Get the latest row rowindex in a group
+                var row = rows[rows.length - 1];
+                idx = row ? this.getRowIndex(row) : 0;
+            }
+            else {
+                idx = this.getRowIndex(rows);
+            }
             // const pos = idx * rowHeight;
             // The position of this row would be the sum of all row heights
             // until the previous row position.
@@ -2559,9 +4879,6 @@ var DataTableBodyComponent = (function () {
     };
     /**
      * Hides the loading indicator
-     *
-     *
-     * @memberOf DataTableBodyComponent
      */
     DataTableBodyComponent.prototype.hideIndicator = function () {
         var _this = this;
@@ -2569,8 +4886,6 @@ var DataTableBodyComponent = (function () {
     };
     /**
      * Updates the index of the rows in the viewport
-     *
-     * @memberOf DataTableBodyComponent
      */
     DataTableBodyComponent.prototype.updateIndexes = function () {
         var first = 0;
@@ -2596,10 +4911,6 @@ var DataTableBodyComponent = (function () {
     /**
      * Refreshes the full Row Height cache.  Should be used
      * when the entire row array state has changed.
-     *
-     * @returns {void}
-     *
-     * @memberOf DataTableBodyComponent
      */
     DataTableBodyComponent.prototype.refreshRowHeightCache = function () {
         if (!this.scrollbarV)
@@ -2615,16 +4926,14 @@ var DataTableBodyComponent = (function () {
                 rowHeight: this.rowHeight,
                 detailRowHeight: this.getDetailRowHeight,
                 externalVirtual: this.scrollbarV && this.externalPaging,
-                rowCount: this.rowCount
+                rowCount: this.rowCount,
+                rowIndexes: this.rowIndexes,
+                rowExpansions: this.rowExpansions
             });
         }
     };
     /**
      * Gets the index for the view port
-     *
-     * @returns {number}
-     *
-     * @memberOf DataTableBodyComponent
      */
     DataTableBodyComponent.prototype.getAdjustedViewPortIndex = function () {
         // Capture the row index of the first row that is visible on the viewport.
@@ -2642,21 +4951,21 @@ var DataTableBodyComponent = (function () {
      * collapse and vice versa.   Note that the expanded status is stored as
      * a part of the row object itself as we have to preserve the expanded row
      * status in case of sorting and filtering of the row set.
-     *
-     * @param {*} row The row for which the expansion needs to be toggled.
-     *
-     * @memberOf DataTableBodyComponent
      */
     DataTableBodyComponent.prototype.toggleRowExpansion = function (row) {
         // Capture the row index of the first row that is visible on the viewport.
         var viewPortFirstRowIndex = this.getAdjustedViewPortIndex();
+        var expanded = this.rowExpansions.get(row);
         // If the detailRowHeight is auto --> only in case of non-virtualized scroll
         if (this.scrollbarV) {
-            var detailRowHeight = this.getDetailRowHeight(row) * (row.$$expanded ? -1 : 1);
-            this.rowHeightsCache.update(row.$$index, detailRowHeight);
+            var detailRowHeight = this.getDetailRowHeight(row) * (expanded ? -1 : 1);
+            // const idx = this.rowIndexes.get(row) || 0;
+            var idx = this.getRowIndex(row);
+            this.rowHeightsCache.update(idx, detailRowHeight);
         }
-        // Update the toggled row and update the heights in the cache.
-        row.$$expanded ^= 1;
+        // Update the toggled row and update thive nevere heights in the cache.
+        expanded = expanded ^= 1;
+        this.rowExpansions.set(row, expanded);
         this.detailToggle.emit({
             rows: [row],
             currentIndex: viewPortFirstRowIndex
@@ -2664,18 +4973,16 @@ var DataTableBodyComponent = (function () {
     };
     /**
      * Expand/Collapse all the rows no matter what their state is.
-     *
-     * @param {boolean} expanded When true, all rows are expanded and when false, all rows will be collapsed.
-     *
-     * @memberOf DataTableBodyComponent
      */
     DataTableBodyComponent.prototype.toggleAllRows = function (expanded) {
+        // clear prev expansions
+        this.rowExpansions.clear();
         var rowExpanded = expanded ? 1 : 0;
         // Capture the row index of the first row that is visible on the viewport.
         var viewPortFirstRowIndex = this.getAdjustedViewPortIndex();
         for (var _i = 0, _a = this.rows; _i < _a.length; _i++) {
             var row = _a[_i];
-            row.$$expanded = rowExpanded;
+            this.rowExpansions.set(row, rowExpanded);
         }
         if (this.scrollbarV) {
             // Refresh the full row heights cache since every row was affected.
@@ -2689,13 +4996,57 @@ var DataTableBodyComponent = (function () {
     };
     /**
      * Recalculates the table
-     *
-     * @memberOf DataTableBodyComponent
      */
     DataTableBodyComponent.prototype.recalcLayout = function () {
         this.refreshRowHeightCache();
         this.updateIndexes();
         this.updateRows();
+    };
+    /**
+     * Tracks the column
+     */
+    DataTableBodyComponent.prototype.columnTrackingFn = function (index, column) {
+        return column.$$id;
+    };
+    /**
+     * Gets the row pinning group styles
+     */
+    DataTableBodyComponent.prototype.stylesByGroup = function (group) {
+        var widths = this.columnGroupWidths;
+        var offsetX = this.offsetX;
+        var styles = {
+            width: widths[group] + "px"
+        };
+        if (group === 'left') {
+            utils_1.translateXY(styles, offsetX, 0);
+        }
+        else if (group === 'right') {
+            var bodyWidth = parseInt(this.innerWidth + '', 0);
+            var totalDiff = widths.total - bodyWidth;
+            var offsetDiff = totalDiff - offsetX;
+            var offset = offsetDiff * -1;
+            utils_1.translateXY(styles, offset, 0);
+        }
+        return styles;
+    };
+    /**
+     * Returns if the row was expanded and set default row expansion when row expansion is empty
+     */
+    DataTableBodyComponent.prototype.getRowExpanded = function (row) {
+        if (this.rowExpansions.size === 0 && this.groupExpansionDefault) {
+            for (var _i = 0, _a = this.groupedRows; _i < _a.length; _i++) {
+                var group = _a[_i];
+                this.rowExpansions.set(group, 1);
+            }
+        }
+        var expanded = this.rowExpansions.get(row);
+        return expanded === 1;
+    };
+    /**
+     * Gets the row index given a row
+     */
+    DataTableBodyComponent.prototype.getRowIndex = function (row) {
+        return this.rowIndexes.get(row) || 0;
     };
     __decorate([
         core_1.Input(),
@@ -2727,7 +5078,7 @@ var DataTableBodyComponent = (function () {
     ], DataTableBodyComponent.prototype, "emptyMessage", void 0);
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Number)
+        __metadata("design:type", String)
     ], DataTableBodyComponent.prototype, "selectionType", void 0);
     __decorate([
         core_1.Input(),
@@ -2744,6 +5095,10 @@ var DataTableBodyComponent = (function () {
     __decorate([
         core_1.Input(),
         __metadata("design:type", Object)
+    ], DataTableBodyComponent.prototype, "groupHeader", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Object)
     ], DataTableBodyComponent.prototype, "selectCheck", void 0);
     __decorate([
         core_1.Input(),
@@ -2753,6 +5108,22 @@ var DataTableBodyComponent = (function () {
         core_1.Input(),
         __metadata("design:type", Object)
     ], DataTableBodyComponent.prototype, "rowClass", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Object)
+    ], DataTableBodyComponent.prototype, "groupedRows", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Boolean)
+    ], DataTableBodyComponent.prototype, "groupExpansionDefault", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Number)
+    ], DataTableBodyComponent.prototype, "innerWidth", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", String)
+    ], DataTableBodyComponent.prototype, "groupRowsBy", void 0);
     __decorate([
         core_1.Input(),
         __metadata("design:type", Number),
@@ -2778,10 +5149,6 @@ var DataTableBodyComponent = (function () {
         __metadata("design:type", Number),
         __metadata("design:paramtypes", [Number])
     ], DataTableBodyComponent.prototype, "rowCount", null);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Number)
-    ], DataTableBodyComponent.prototype, "innerWidth", void 0);
     __decorate([
         core_1.HostBinding('style.width'),
         __metadata("design:type", String),
@@ -2824,12 +5191,13 @@ var DataTableBodyComponent = (function () {
     DataTableBodyComponent = __decorate([
         core_1.Component({
             selector: 'datatable-body',
-            template: "\n    <datatable-selection\n      #selector\n      [selected]=\"selected\"\n      [rows]=\"temp\"\n      [selectCheck]=\"selectCheck\"\n      [selectEnabled]=\"selectEnabled\"\n      [selectionType]=\"selectionType\"\n      [rowIdentity]=\"rowIdentity\"\n      (select)=\"select.emit($event)\"\n      (activate)=\"activate.emit($event)\">\n      <datatable-progress\n        *ngIf=\"loadingIndicator\">\n      </datatable-progress>\n      <datatable-scroller\n        *ngIf=\"rows?.length\"\n        [scrollbarV]=\"scrollbarV\"\n        [scrollbarH]=\"scrollbarH\"\n        [scrollHeight]=\"scrollHeight\"\n        [scrollWidth]=\"columnGroupWidths.total\"\n        (scroll)=\"onBodyScroll($event)\">\n        <datatable-row-wrapper\n          *ngFor=\"let row of temp; let i = index; trackBy: rowTrackingFn;\"\n          [ngStyle]=\"getRowsStyles(row)\"\n          [rowDetail]=\"rowDetail\"\n          [detailRowHeight]=\"getDetailRowHeight(row,i)\"\n          [row]=\"row\"\n          [expanded]=\"row.$$expanded === 1\"\n          (rowContextmenu)=\"rowContextmenu.emit($event)\">\n          <datatable-body-row\n            tabindex=\"-1\"\n            [isSelected]=\"selector.getRowSelected(row)\"\n            [innerWidth]=\"innerWidth\"\n            [offsetX]=\"offsetX\"\n            [columns]=\"columns\"\n            [rowHeight]=\"getRowHeight(row)\"\n            [row]=\"row\"\n            [rowClass]=\"rowClass\"\n            (activate)=\"selector.onActivate($event, i)\">\n          </datatable-body-row>\n        </datatable-row-wrapper>\n      </datatable-scroller>\n      <div\n        class=\"empty-row\"\n        *ngIf=\"!rows?.length\"\n        [innerHTML]=\"emptyMessage\">\n      </div>\n    </datatable-selection>\n  ",
+            template: "\n    <datatable-selection\n      #selector\n      [selected]=\"selected\"\n      [rows]=\"rows\"\n      [selectCheck]=\"selectCheck\"\n      [selectEnabled]=\"selectEnabled\"\n      [selectionType]=\"selectionType\"\n      [rowIdentity]=\"rowIdentity\"\n      (select)=\"select.emit($event)\"\n      (activate)=\"activate.emit($event)\">\n      <datatable-progress\n        *ngIf=\"loadingIndicator\">\n      </datatable-progress>\n      <datatable-scroller\n        *ngIf=\"rows?.length\"\n        [scrollbarV]=\"scrollbarV\"\n        [scrollbarH]=\"scrollbarH\"\n        [scrollHeight]=\"scrollHeight\"\n        [scrollWidth]=\"columnGroupWidths.total\"\n        (scroll)=\"onBodyScroll($event)\">\n        <datatable-row-wrapper\n          [groupedRows]=\"groupedRows\"\n          *ngFor=\"let group of temp; let i = index; trackBy: rowTrackingFn;\"\n          [innerWidth]=\"innerWidth\"\n          [ngStyle]=\"getRowsStyles(group)\"\n          [rowDetail]=\"rowDetail\"\n          [groupHeader]=\"groupHeader\"\n          [offsetX]=\"offsetX\"\n          [detailRowHeight]=\"getDetailRowHeight(group[i],i)\"\n          [row]=\"group\"\n          [expanded]=\"getRowExpanded(group)\"\n          [rowIndex]=\"getRowIndex(group[i])\"\n          (rowContextmenu)=\"rowContextmenu.emit($event)\">\n          <datatable-body-row \n            *ngIf=\"!groupedRows; else groupedRowsTemplate\"        \n            tabindex=\"-1\"\n            [isSelected]=\"selector.getRowSelected(group)\"\n            [innerWidth]=\"innerWidth\"\n            [offsetX]=\"offsetX\"\n            [columns]=\"columns\"\n            [rowHeight]=\"getRowHeight(group)\"\n            [row]=\"group\"\n            [rowIndex]=\"getRowIndex(group)\"\n            [expanded]=\"getRowExpanded(group)\"            \n            [rowClass]=\"rowClass\"\n            (activate)=\"selector.onActivate($event, indexes.first + i)\">\n          </datatable-body-row>\n          <ng-template #groupedRowsTemplate>\n            <datatable-body-row\n              *ngFor=\"let row of group.value; let i = index; trackBy: rowTrackingFn;\"\n              tabindex=\"-1\"\n              [isSelected]=\"selector.getRowSelected(row)\"\n              [innerWidth]=\"innerWidth\"\n              [offsetX]=\"offsetX\"\n              [columns]=\"columns\"\n              [rowHeight]=\"getRowHeight(row)\"\n              [row]=\"row\"\n              [group]=\"group.value\"\n              [rowIndex]=\"getRowIndex(row)\"\n              [expanded]=\"getRowExpanded(row)\"\n              [rowClass]=\"rowClass\"\n              (activate)=\"selector.onActivate($event, i)\">\n            </datatable-body-row>\n          </ng-template>\n        </datatable-row-wrapper>\n      </datatable-scroller>\n      <div\n        class=\"empty-row\"\n        *ngIf=\"!rows?.length\"\n        [innerHTML]=\"emptyMessage\">\n      </div>\n    </datatable-selection>\n  ",
+            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
             host: {
                 class: 'datatable-body'
             }
         }),
-        __metadata("design:paramtypes", [])
+        __metadata("design:paramtypes", [core_1.ChangeDetectorRef])
     ], DataTableBodyComponent);
     return DataTableBodyComponent;
 }());
@@ -2854,6 +5222,8 @@ __export(__webpack_require__("./src/components/body/progress-bar.component.ts"))
 __export(__webpack_require__("./src/components/body/scroller.component.ts"));
 __export(__webpack_require__("./src/components/body/body-row-wrapper.component.ts"));
 __export(__webpack_require__("./src/components/body/selection.component.ts"));
+__export(__webpack_require__("./src/components/body/body-group-header.directive.ts"));
+__export(__webpack_require__("./src/components/body/body-group-header-template.directive.ts"));
 
 
 /***/ }),
@@ -2983,7 +5353,8 @@ var ScrollerComponent = (function () {
             template: "\n    <ng-content></ng-content>\n  ",
             host: {
                 class: 'datatable-scroll'
-            }
+            },
+            changeDetection: core_1.ChangeDetectionStrategy.OnPush
         }),
         __metadata("design:paramtypes", [core_1.ElementRef, core_1.Renderer])
     ], ScrollerComponent);
@@ -3149,7 +5520,7 @@ var DataTableSelectionComponent = (function () {
     ], DataTableSelectionComponent.prototype, "selectEnabled", void 0);
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Number)
+        __metadata("design:type", String)
     ], DataTableSelectionComponent.prototype, "selectionType", void 0);
     __decorate([
         core_1.Input(),
@@ -3170,7 +5541,8 @@ var DataTableSelectionComponent = (function () {
     DataTableSelectionComponent = __decorate([
         core_1.Component({
             selector: 'datatable-selection',
-            template: "\n    <ng-content></ng-content>\n  "
+            template: "\n    <ng-content></ng-content>\n  ",
+            changeDetection: core_1.ChangeDetectionStrategy.OnPush
         })
     ], DataTableSelectionComponent);
     return DataTableSelectionComponent;
@@ -3375,7 +5747,7 @@ __export(__webpack_require__("./src/components/columns/column-cell.directive.ts"
 /***/ (function(module, exports, __webpack_require__) {
 
 
-        var result = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/postcss-loader/index.js?sourceMap!./node_modules/sass-loader/lib/loader.js?sourceMap!./src/components/datatable.component.scss");
+        var result = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/postcss-loader/index.js!./node_modules/sass-loader/lib/loader.js?{\"sourceMap\":true}!./src/components/datatable.component.scss");
 
         if (typeof result === "string") {
             module.exports = result;
@@ -3414,135 +5786,79 @@ var utils_1 = __webpack_require__("./src/utils/index.ts");
 var services_1 = __webpack_require__("./src/services/index.ts");
 var types_1 = __webpack_require__("./src/types/index.ts");
 var body_1 = __webpack_require__("./src/components/body/index.ts");
+var body_group_header_directive_1 = __webpack_require__("./src/components/body/body-group-header.directive.ts");
 var columns_1 = __webpack_require__("./src/components/columns/index.ts");
 var row_detail_1 = __webpack_require__("./src/components/row-detail/index.ts");
 var footer_1 = __webpack_require__("./src/components/footer/index.ts");
 var DatatableComponent = (function () {
-    function DatatableComponent(scrollbarHelper, element, differs) {
+    function DatatableComponent(scrollbarHelper, cd, element, differs) {
         this.scrollbarHelper = scrollbarHelper;
+        this.cd = cd;
         /**
          * List of row objects that should be
          * represented as selected in the grid.
          * Default value: `[]`
-         *
-         * @type {any[]}
-         * @memberOf DatatableComponent
          */
         this.selected = [];
         /**
          * Enable vertical scrollbars
-         *
-         * @type {boolean}
-         * @memberOf DatatableComponent
          */
         this.scrollbarV = false;
         /**
          * Enable horz scrollbars
-         *
-         * @type {boolean}
-         * @memberOf DatatableComponent
          */
         this.scrollbarH = false;
         /**
          * The row height; which is necessary
          * to calculate the height for the lazy rendering.
-         *
-         * @type {number}
-         * @memberOf DatatableComponent
          */
         this.rowHeight = 30;
         /**
          * Type of column width distribution formula.
          * Example: flex, force, standard
-         *
-         * @type {ColumnMode}
-         * @memberOf DatatableComponent
          */
         this.columnMode = types_1.ColumnMode.standard;
         /**
          * The minimum header height in pixels.
          * Pass a falsey for no header
-         *
-         * @type {*}
-         * @memberOf DatatableComponent
          */
         this.headerHeight = 30;
         /**
          * The minimum footer height in pixels.
          * Pass falsey for no footer
-         *
-         * @type {number}
-         * @memberOf DatatableComponent
          */
         this.footerHeight = 0;
         /**
          * If the table should use external paging
          * otherwise its assumed that all data is preloaded.
-         *
-         * @type {boolean}
-         * @memberOf DatatableComponent
          */
         this.externalPaging = false;
         /**
          * If the table should use external sorting or
          * the built-in basic sorting.
-         *
-         * @type {boolean}
-         * @memberOf DatatableComponent
          */
         this.externalSorting = false;
         /**
-         * The page size to be shown.
-         * Default value: `undefined`
-         *
-         * @type {number}
-         * @memberOf DatatableComponent
-         */
-        this.limit = undefined;
-        /**
-         * The current offset ( page - 1 ) shown.
-         * Default value: `0`
-         *
-         * @type {number}
-         * @memberOf DatatableComponent
-         */
-        this.offset = 0;
-        /**
          * Show the linear loading bar.
          * Default value: `false`
-         *
-         * @type {boolean}
-         * @memberOf DatatableComponent
          */
         this.loadingIndicator = false;
         /**
          * Enable/Disable ability to re-order columns
          * by dragging them.
-         *
-         * @type {boolean}
-         * @memberOf DatatableComponent
          */
         this.reorderable = true;
         /**
          * The type of sorting
-         *
-         * @type {SortType}
-         * @memberOf DatatableComponent
          */
         this.sortType = types_1.SortType.single;
         /**
          * Array of sorted columns by property and type.
          * Default value: `[]`
-         *
-         * @type {any[]}
-         * @memberOf DatatableComponent
          */
         this.sorts = [];
         /**
          * Css class overrides
-         *
-         * @type {*}
-         * @memberOf DatatableComponent
          */
         this.cssClasses = {
             sortAscending: 'datatable-icon-up',
@@ -3558,9 +5874,6 @@ var DatatableComponent = (function () {
          * emptyMessage     [default] = 'No data to display'
          * totalMessage     [default] = 'total'
          * selectedMessage  [default] = 'selected'
-         *
-         * @type {*}
-         * @memberOf DatatableComponent
          */
         this.messages = {
             // Message to show when array is presented
@@ -3576,98 +5889,101 @@ var DatatableComponent = (function () {
          * when tracking/comparing them, we'll use the value of this fn,
          *
          * (`fn(x) === fn(y)` instead of `x === y`)
-         *
-         * @memberOf DatatableComponent
          */
         this.rowIdentity = (function (x) { return x; });
         /**
-         * Body was scrolled typically in a `scrollbarV:true` scenario.
+         * A boolean you can use to set the detault behaviour of rows and groups
+         * whether they will start expanded or not. If ommited the default is NOT expanded.
          *
-         * @type {EventEmitter<any>}
-         * @memberOf DatatableComponent
+         */
+        this.groupExpansionDefault = false;
+        /**
+         * Body was scrolled typically in a `scrollbarV:true` scenario.
          */
         this.scroll = new core_1.EventEmitter();
         /**
          * A cell or row was focused via keyboard or mouse click.
-         *
-         * @type {EventEmitter<any>}
-         * @memberOf DatatableComponent
          */
         this.activate = new core_1.EventEmitter();
         /**
          * A cell or row was selected.
-         *
-         * @type {EventEmitter<any>}
-         * @memberOf DatatableComponent
          */
         this.select = new core_1.EventEmitter();
         /**
          * Column sort was invoked.
-         *
-         * @type {EventEmitter<any>}
-         * @memberOf DatatableComponent
          */
         this.sort = new core_1.EventEmitter();
         /**
          * The table was paged either triggered by the pager or the body scroll.
-         *
-         * @type {EventEmitter<any>}
-         * @memberOf DatatableComponent
          */
         this.page = new core_1.EventEmitter();
         /**
          * Columns were re-ordered.
-         *
-         * @type {EventEmitter<any>}
-         * @memberOf DatatableComponent
          */
         this.reorder = new core_1.EventEmitter();
         /**
          * Column was resized.
-         *
-         * @type {EventEmitter<any>}
-         * @memberOf DatatableComponent
          */
         this.resize = new core_1.EventEmitter();
         /**
          * The context menu was invoked on the table.
          * type indicates whether the header or the body was clicked.
          * content contains either the column or the row that was clicked.
-         *
-         * @memberOf DatatableComponent
          */
         this.tableContextmenu = new core_1.EventEmitter(false);
         this.rowCount = 0;
         this.offsetX = 0;
         this._count = 0;
+        this._offset = 0;
         // get ref to elm for measuring
         this.element = element.nativeElement;
-        this.rowDiffer = differs.find({}).create(null);
+        this.rowDiffer = differs.find({}).create();
     }
     Object.defineProperty(DatatableComponent.prototype, "rows", {
         /**
          * Gets the rows.
-         *
-         * @readonly
-         * @type {*}
-         * @memberOf DatatableComponent
          */
         get: function () {
             return this._rows;
         },
         /**
          * Rows that are displayed in the table.
-         *
-         * @memberOf DatatableComponent
          */
         set: function (val) {
+            this._rows = val;
             // auto sort on new updates
             if (!this.externalSorting) {
-                val = utils_1.sortRows(val, this.columns, this.sorts);
+                this._internalRows = utils_1.sortRows(val, this._internalColumns, this.sorts);
             }
-            this._rows = val;
+            else {
+                this._internalRows = val.slice();
+            }
             // recalculate sizes/etc
             this.recalculate();
+            if (this._rows && this._groupRowsBy) {
+                // If a column has been specified in _groupRowsBy created a new array with the data grouped by that row
+                this.groupedRows = this.groupArrayBy(this._rows, this._groupRowsBy);
+            }
+            this.cd.markForCheck();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DatatableComponent.prototype, "groupRowsBy", {
+        get: function () {
+            return this._groupRowsBy;
+        },
+        /**
+         * This attribute allows the user to set the name of the column to group the data with
+         */
+        set: function (val) {
+            if (val) {
+                this._groupRowsBy = val;
+                if (this._rows && this._groupRowsBy) {
+                    // cretes a new array with the data grouped
+                    this.groupedRows = this.groupArrayBy(this._rows, this._groupRowsBy);
+                }
+            }
         },
         enumerable: true,
         configurable: true
@@ -3675,25 +5991,39 @@ var DatatableComponent = (function () {
     Object.defineProperty(DatatableComponent.prototype, "columns", {
         /**
          * Get the columns.
-         *
-         * @readonly
-         * @type {any[]}
-         * @memberOf DatatableComponent
          */
         get: function () {
             return this._columns;
         },
         /**
          * Columns to be displayed.
-         *
-         * @memberOf DatatableComponent
          */
         set: function (val) {
             if (val) {
-                utils_1.setColumnDefaults(val);
-                this.recalculateColumns(val);
+                this._internalColumns = val.slice();
+                utils_1.setColumnDefaults(this._internalColumns);
+                this.recalculateColumns();
             }
             this._columns = val;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DatatableComponent.prototype, "limit", {
+        /**
+         * Gets the limit.
+         */
+        get: function () {
+            return this._limit;
+        },
+        /**
+         * The page size to be shown.
+         * Default value: `undefined`
+         */
+        set: function (val) {
+            this._limit = val;
+            // recalculate sizes/etc
+            this.recalculate();
         },
         enumerable: true,
         configurable: true
@@ -3701,10 +6031,6 @@ var DatatableComponent = (function () {
     Object.defineProperty(DatatableComponent.prototype, "count", {
         /**
          * Gets the count.
-         *
-         * @readonly
-         * @type {number}
-         * @memberOf DatatableComponent
          */
         get: function () {
             return this._count;
@@ -3712,9 +6038,6 @@ var DatatableComponent = (function () {
         /**
          * The total count of all rows.
          * Default value: `0`
-         *
-         * @type {number}
-         * @memberOf DatatableComponent
          */
         set: function (val) {
             this._count = val;
@@ -3724,13 +6047,23 @@ var DatatableComponent = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(DatatableComponent.prototype, "offset", {
+        get: function () {
+            return Math.max(Math.min(this._offset, Math.ceil(this.rowCount / this.pageSize) - 1), 0);
+        },
+        /**
+         * The current offset ( page - 1 ) shown.
+         * Default value: `0`
+         */
+        set: function (val) {
+            this._offset = val;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(DatatableComponent.prototype, "isFixedHeader", {
         /**
          * CSS class applied if the header height if fixed height.
-         *
-         * @readonly
-         * @type {boolean}
-         * @memberOf DatatableComponent
          */
         get: function () {
             var headerHeight = this.headerHeight;
@@ -3744,10 +6077,6 @@ var DatatableComponent = (function () {
         /**
          * CSS class applied to the root element if
          * the row heights are fixed heights.
-         *
-         * @readonly
-         * @type {boolean}
-         * @memberOf DatatableComponent
          */
         get: function () {
             var rowHeight = this.rowHeight;
@@ -3761,10 +6090,6 @@ var DatatableComponent = (function () {
         /**
          * CSS class applied to root element if
          * vertical scrolling is enabled.
-         *
-         * @readonly
-         * @type {boolean}
-         * @memberOf DatatableComponent
          */
         get: function () {
             return this.scrollbarV;
@@ -3776,10 +6101,6 @@ var DatatableComponent = (function () {
         /**
          * CSS class applied to the root element
          * if the horziontal scrolling is enabled.
-         *
-         * @readonly
-         * @type {boolean}
-         * @memberOf DatatableComponent
          */
         get: function () {
             return this.scrollbarH;
@@ -3790,10 +6111,6 @@ var DatatableComponent = (function () {
     Object.defineProperty(DatatableComponent.prototype, "isSelectable", {
         /**
          * CSS class applied to root element is selectable.
-         *
-         * @readonly
-         * @type {boolean}
-         * @memberOf DatatableComponent
          */
         get: function () {
             return this.selectionType !== undefined;
@@ -3804,10 +6121,6 @@ var DatatableComponent = (function () {
     Object.defineProperty(DatatableComponent.prototype, "isCheckboxSelection", {
         /**
          * CSS class applied to root is checkbox selection.
-         *
-         * @readonly
-         * @type {boolean}
-         * @memberOf DatatableComponent
          */
         get: function () {
             return this.selectionType === types_1.SelectionType.checkbox;
@@ -3818,10 +6131,6 @@ var DatatableComponent = (function () {
     Object.defineProperty(DatatableComponent.prototype, "isCellSelection", {
         /**
          * CSS class applied to root if cell selection.
-         *
-         * @readonly
-         * @type {boolean}
-         * @memberOf DatatableComponent
          */
         get: function () {
             return this.selectionType === types_1.SelectionType.cell;
@@ -3832,10 +6141,6 @@ var DatatableComponent = (function () {
     Object.defineProperty(DatatableComponent.prototype, "isSingleSelection", {
         /**
          * CSS class applied to root if single select.
-         *
-         * @readonly
-         * @type {boolean}
-         * @memberOf DatatableComponent
          */
         get: function () {
             return this.selectionType === types_1.SelectionType.single;
@@ -3846,10 +6151,6 @@ var DatatableComponent = (function () {
     Object.defineProperty(DatatableComponent.prototype, "isMultiSelection", {
         /**
          * CSS class added to root element if mulit select
-         *
-         * @readonly
-         * @type {boolean}
-         * @memberOf DatatableComponent
          */
         get: function () {
             return this.selectionType === types_1.SelectionType.multi;
@@ -3860,10 +6161,6 @@ var DatatableComponent = (function () {
     Object.defineProperty(DatatableComponent.prototype, "isMultiClickSelection", {
         /**
          * CSS class added to root element if mulit click select
-         *
-         * @readonly
-         * @type {boolean}
-         * @memberOf DatatableComponent
          */
         get: function () {
             return this.selectionType === types_1.SelectionType.multiClick;
@@ -3874,10 +6171,6 @@ var DatatableComponent = (function () {
     Object.defineProperty(DatatableComponent.prototype, "columnTemplates", {
         /**
          * Returns the column templates.
-         *
-         * @readonly
-         * @type {QueryList<DataTableColumnDirective>}
-         * @memberOf DatatableComponent
          */
         get: function () {
             return this._columnTemplates;
@@ -3885,8 +6178,6 @@ var DatatableComponent = (function () {
         /**
          * Column templates gathered from `ContentChildren`
          * if described in your markup.
-         *
-         * @memberOf DatatableComponent
          */
         set: function (val) {
             this._columnTemplates = val;
@@ -3895,7 +6186,9 @@ var DatatableComponent = (function () {
                 var arr = val.toArray();
                 if (arr.length) {
                     // translate them to normal objects
-                    this.columns = utils_1.translateTemplates(arr);
+                    this._internalColumns = utils_1.translateTemplates(arr);
+                    utils_1.setColumnDefaults(this._internalColumns);
+                    this.recalculateColumns();
                 }
             }
         },
@@ -3905,11 +6198,6 @@ var DatatableComponent = (function () {
     Object.defineProperty(DatatableComponent.prototype, "allRowsSelected", {
         /**
          * Returns if all rows are selected.
-         *
-         * @readonly
-         * @private
-         * @type {boolean}
-         * @memberOf DatatableComponent
          */
         get: function () {
             return this.selected &&
@@ -3923,8 +6211,6 @@ var DatatableComponent = (function () {
     /**
      * Lifecycle hook that is called after data-bound
      * properties of a directive are initialized.
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.ngOnInit = function () {
         // need to call this immediatly to size
@@ -3935,18 +6221,15 @@ var DatatableComponent = (function () {
     /**
      * Lifecycle hook that is called after a component's
      * view has been fully initialized.
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.ngAfterViewInit = function () {
         var _this = this;
         if (!this.externalSorting) {
-            var val = utils_1.sortRows(this._rows, this.columns, this.sorts);
-            this._rows = val;
+            this._internalRows = utils_1.sortRows(this._rows, this._internalColumns, this.sorts);
         }
         // this has to be done to prevent the change detection
         // tree from freaking out because we are readjusting
-        setTimeout(function () {
+        requestAnimationFrame(function () {
             _this.recalculate();
             // emit page for virtual server-side kickoff
             if (_this.externalPaging && _this.scrollbarV) {
@@ -3960,13 +6243,44 @@ var DatatableComponent = (function () {
         });
     };
     /**
-     * Lifecycle hook that is called when Angular dirty checks a directive.
+     * Creates a map with the data grouped by the user choice of grouping index
      *
-     * @memberOf DatatableComponent
+     * @param originalArray the original array passed via parameter
+     * @param groupByIndex  the index of the column to group the data by
      */
+    DatatableComponent.prototype.groupArrayBy = function (originalArray, groupBy) {
+        // create a map to hold groups with their corresponding results
+        var map = new Map();
+        var i = 0;
+        originalArray.forEach(function (item) {
+            var key = item[groupBy];
+            if (!map.has(key)) {
+                map.set(key, [item]);
+            }
+            else {
+                map.get(key).push(item);
+            }
+            i++;
+        });
+        var addGroup = function (key, value) {
+            return { key: key, value: value };
+        };
+        // convert map back to a simple array of objects
+        return Array.from(map, function (x) { return addGroup(x[0], x[1]); });
+    };
+    /*
+    * Lifecycle hook that is called when Angular dirty checks a directive.
+    */
     DatatableComponent.prototype.ngDoCheck = function () {
         if (this.rowDiffer.diff(this.rows)) {
+            if (!this.externalSorting) {
+                this._internalRows = utils_1.sortRows(this._rows, this._internalColumns, this.sorts);
+            }
+            else {
+                this._internalRows = this.rows.slice();
+            }
             this.recalculatePages();
+            this.cd.markForCheck();
         }
     };
     /**
@@ -3979,8 +6293,6 @@ var DatatableComponent = (function () {
      *  - Paging related
      *
      * Also can be manually invoked or upon window resize.
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.recalculate = function () {
         this.recalculateDims();
@@ -3988,8 +6300,6 @@ var DatatableComponent = (function () {
     };
     /**
      * Window resize handler to update sizes.
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.onWindowResize = function () {
         this.recalculate();
@@ -3997,16 +6307,9 @@ var DatatableComponent = (function () {
     /**
      * Recalulcates the column widths based on column width
      * distribution mode and scrollbar offsets.
-     *
-     * @param {any[]} [columns=this.columns]
-     * @param {number} [forceIdx=-1]
-     * @param {boolean} [allowBleed=this.scrollH]
-     * @returns {any[]}
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.recalculateColumns = function (columns, forceIdx, allowBleed) {
-        if (columns === void 0) { columns = this.columns; }
+        if (columns === void 0) { columns = this._internalColumns; }
         if (forceIdx === void 0) { forceIdx = -1; }
         if (allowBleed === void 0) { allowBleed = this.scrollbarH; }
         if (!columns)
@@ -4027,7 +6330,6 @@ var DatatableComponent = (function () {
      * Recalculates the dimensions of the table size.
      * Internally calls the page size and row count calcs too.
      *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.recalculateDims = function () {
         var dims = this.element.getBoundingClientRect();
@@ -4044,9 +6346,6 @@ var DatatableComponent = (function () {
     };
     /**
      * Recalculates the pages after a update.
-     *
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.recalculatePages = function () {
         this.pageSize = this.calcPageSize();
@@ -4054,10 +6353,6 @@ var DatatableComponent = (function () {
     };
     /**
      * Body triggered a page event.
-     *
-     * @param {*} { offset }
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.onBodyPage = function (_a) {
         var offset = _a.offset;
@@ -4071,10 +6366,6 @@ var DatatableComponent = (function () {
     };
     /**
      * The body triggered a scroll event.
-     *
-     * @param {MouseEvent} event
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.onBodyScroll = function (event) {
         this.offsetX = event.offsetX;
@@ -4082,10 +6373,6 @@ var DatatableComponent = (function () {
     };
     /**
      * The footer triggered a page event.
-     *
-     * @param {*} event
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.onFooterPage = function (event) {
         this.offset = event.page - 1;
@@ -4099,11 +6386,6 @@ var DatatableComponent = (function () {
     };
     /**
      * Recalculates the sizes of the page
-     *
-     * @param {any[]} [val=this.rows]
-     * @returns {number}
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.calcPageSize = function (val) {
         if (val === void 0) { val = this.rows; }
@@ -4115,37 +6397,35 @@ var DatatableComponent = (function () {
             return Math.max(size, 0);
         }
         // if limit is passed, we are paging
-        if (this.limit !== undefined)
+        if (this.limit !== undefined) {
             return this.limit;
+        }
         // otherwise use row length
-        if (val)
+        if (val) {
             return val.length;
+        }
         // other empty :(
         return 0;
     };
     /**
      * Calculates the row count.
-     *
-     * @param {any[]} [val=this.rows]
-     * @returns {number}
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.calcRowCount = function (val) {
         if (val === void 0) { val = this.rows; }
         if (!this.externalPaging) {
             if (!val)
                 return 0;
-            return val.length;
+            if (this.groupedRows) {
+                return this.groupedRows.length;
+            }
+            else {
+                return val.length;
+            }
         }
         return this.count;
     };
     /**
      * The header triggered a contextmenu event.
-     *
-     * @param {*} { event, column }
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.onColumnContextmenu = function (_a) {
         var event = _a.event, column = _a.column;
@@ -4153,10 +6433,6 @@ var DatatableComponent = (function () {
     };
     /**
      * The body triggered a contextmenu event.
-     *
-     * @param {*} { event, row }
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.onRowContextmenu = function (_a) {
         var event = _a.event, row = _a.row;
@@ -4164,10 +6440,6 @@ var DatatableComponent = (function () {
     };
     /**
      * The header triggered a column resize event.
-     *
-     * @param {*} { column, newValue }
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.onColumnResize = function (_a) {
         var column = _a.column, newValue = _a.newValue;
@@ -4176,7 +6448,7 @@ var DatatableComponent = (function () {
             return;
         }
         var idx;
-        var cols = this.columns.map(function (c, i) {
+        var cols = this._internalColumns.map(function (c, i) {
             c = __assign({}, c);
             if (c.$$id === column.$$id) {
                 idx = i;
@@ -4188,7 +6460,7 @@ var DatatableComponent = (function () {
             return c;
         });
         this.recalculateColumns(cols, idx);
-        this._columns = cols;
+        this._internalColumns = cols;
         this.resize.emit({
             column: column,
             newValue: newValue
@@ -4196,20 +6468,16 @@ var DatatableComponent = (function () {
     };
     /**
      * The header triggered a column re-order event.
-     *
-     * @param {*} { column, newValue, prevValue }
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.onColumnReorder = function (_a) {
         var column = _a.column, newValue = _a.newValue, prevValue = _a.prevValue;
-        var cols = this.columns.map(function (c) {
+        var cols = this._internalColumns.map(function (c) {
             return __assign({}, c);
         });
         var prevCol = cols[newValue];
         cols[newValue] = column;
         cols[prevValue] = prevCol;
-        this.columns = cols;
+        this._internalColumns = cols;
         this.reorder.emit({
             column: column,
             newValue: newValue,
@@ -4218,10 +6486,6 @@ var DatatableComponent = (function () {
     };
     /**
      * The header triggered a column sort event.
-     *
-     * @param {*} event
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.onColumnSort = function (event) {
         var sorts = event.sorts;
@@ -4229,7 +6493,7 @@ var DatatableComponent = (function () {
         // the rows again on the 'push' detection...
         if (this.externalSorting === false) {
             // don't use normal setter so we don't resort
-            this._rows = utils_1.sortRows(this.rows, this.columns, sorts);
+            this._internalRows = utils_1.sortRows(this.rows, this._internalColumns, sorts);
         }
         this.sorts = sorts;
         // Always go to first page when sorting to see the newly sorted data
@@ -4239,10 +6503,6 @@ var DatatableComponent = (function () {
     };
     /**
      * Toggle all row selection
-     *
-     * @param {*} event
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.onHeaderSelect = function (event) {
         // before we splice, chk if we currently have all selected
@@ -4260,10 +6520,6 @@ var DatatableComponent = (function () {
     };
     /**
      * A row was selected from body
-     *
-     * @param {*} event
-     *
-     * @memberOf DatatableComponent
      */
     DatatableComponent.prototype.onBodySelect = function (event) {
         this.select.emit(event);
@@ -4273,6 +6529,15 @@ var DatatableComponent = (function () {
         __metadata("design:type", Object),
         __metadata("design:paramtypes", [Object])
     ], DatatableComponent.prototype, "rows", null);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", String),
+        __metadata("design:paramtypes", [String])
+    ], DatatableComponent.prototype, "groupRowsBy", null);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Array)
+    ], DatatableComponent.prototype, "groupedRows", void 0);
     __decorate([
         core_1.Input(),
         __metadata("design:type", Array),
@@ -4296,7 +6561,7 @@ var DatatableComponent = (function () {
     ], DatatableComponent.prototype, "rowHeight", void 0);
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Number)
+        __metadata("design:type", String)
     ], DatatableComponent.prototype, "columnMode", void 0);
     __decorate([
         core_1.Input(),
@@ -4316,8 +6581,9 @@ var DatatableComponent = (function () {
     ], DatatableComponent.prototype, "externalSorting", void 0);
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Number)
-    ], DatatableComponent.prototype, "limit", void 0);
+        __metadata("design:type", Object),
+        __metadata("design:paramtypes", [Object])
+    ], DatatableComponent.prototype, "limit", null);
     __decorate([
         core_1.Input(),
         __metadata("design:type", Number),
@@ -4325,15 +6591,16 @@ var DatatableComponent = (function () {
     ], DatatableComponent.prototype, "count", null);
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Number)
-    ], DatatableComponent.prototype, "offset", void 0);
+        __metadata("design:type", Number),
+        __metadata("design:paramtypes", [Number])
+    ], DatatableComponent.prototype, "offset", null);
     __decorate([
         core_1.Input(),
         __metadata("design:type", Boolean)
     ], DatatableComponent.prototype, "loadingIndicator", void 0);
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Number)
+        __metadata("design:type", String)
     ], DatatableComponent.prototype, "selectionType", void 0);
     __decorate([
         core_1.Input(),
@@ -4341,7 +6608,7 @@ var DatatableComponent = (function () {
     ], DatatableComponent.prototype, "reorderable", void 0);
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Number)
+        __metadata("design:type", String)
     ], DatatableComponent.prototype, "sortType", void 0);
     __decorate([
         core_1.Input(),
@@ -4367,6 +6634,10 @@ var DatatableComponent = (function () {
         core_1.Input(),
         __metadata("design:type", Object)
     ], DatatableComponent.prototype, "selectCheck", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Boolean)
+    ], DatatableComponent.prototype, "groupExpansionDefault", void 0);
     __decorate([
         core_1.Input(),
         __metadata("design:type", String)
@@ -4463,6 +6734,10 @@ var DatatableComponent = (function () {
         __metadata("design:type", row_detail_1.DatatableRowDetailDirective)
     ], DatatableComponent.prototype, "rowDetail", void 0);
     __decorate([
+        core_1.ContentChild(body_group_header_directive_1.DatatableGroupHeaderDirective),
+        __metadata("design:type", body_group_header_directive_1.DatatableGroupHeaderDirective)
+    ], DatatableComponent.prototype, "groupHeader", void 0);
+    __decorate([
         core_1.ContentChild(footer_1.DatatableFooterDirective),
         __metadata("design:type", footer_1.DatatableFooterDirective)
     ], DatatableComponent.prototype, "footer", void 0);
@@ -4480,7 +6755,8 @@ var DatatableComponent = (function () {
     DatatableComponent = __decorate([
         core_1.Component({
             selector: 'ngx-datatable',
-            template: "\n    <div\n      visibilityObserver\n      (visible)=\"recalculate()\">\n      <datatable-header\n        *ngIf=\"headerHeight\"\n        [sorts]=\"sorts\"\n        [sortType]=\"sortType\"\n        [scrollbarH]=\"scrollbarH\"\n        [innerWidth]=\"innerWidth\"\n        [offsetX]=\"offsetX\"\n        [columns]=\"columns\"\n        [headerHeight]=\"headerHeight\"\n        [reorderable]=\"reorderable\"\n        [sortAscendingIcon]=\"cssClasses.sortAscending\"\n        [sortDescendingIcon]=\"cssClasses.sortDescending\"\n        [allRowsSelected]=\"allRowsSelected\"\n        [selectionType]=\"selectionType\"\n        (sort)=\"onColumnSort($event)\"\n        (resize)=\"onColumnResize($event)\"\n        (reorder)=\"onColumnReorder($event)\"\n        (select)=\"onHeaderSelect($event)\"\n        (columnContextmenu)=\"onColumnContextmenu($event)\">\n      </datatable-header>\n      <datatable-body\n        [rows]=\"rows\"\n        [scrollbarV]=\"scrollbarV\"\n        [scrollbarH]=\"scrollbarH\"\n        [loadingIndicator]=\"loadingIndicator\"\n        [externalPaging]=\"externalPaging\"\n        [rowHeight]=\"rowHeight\"\n        [rowCount]=\"rowCount\"\n        [offset]=\"offset\"\n        [trackByProp]=\"trackByProp\"\n        [columns]=\"columns\"\n        [pageSize]=\"pageSize\"\n        [offsetX]=\"offsetX\"\n        [rowDetail]=\"rowDetail\"\n        [selected]=\"selected\"\n        [innerWidth]=\"innerWidth\"\n        [bodyHeight]=\"bodyHeight\"\n        [selectionType]=\"selectionType\"\n        [emptyMessage]=\"messages.emptyMessage\"\n        [rowIdentity]=\"rowIdentity\"\n        [rowClass]=\"rowClass\"\n        [selectCheck]=\"selectCheck\"\n        (page)=\"onBodyPage($event)\"\n        (activate)=\"activate.emit($event)\"\n        (rowContextmenu)=\"onRowContextmenu($event)\"\n        (select)=\"onBodySelect($event)\"\n        (scroll)=\"onBodyScroll($event)\">\n      </datatable-body>\n      <datatable-footer\n        *ngIf=\"footerHeight\"\n        [rowCount]=\"rowCount\"\n        [pageSize]=\"pageSize\"\n        [offset]=\"offset\"\n        [footerHeight]=\"footerHeight\"\n        [footerTemplate]=\"footer\"\n        [totalMessage]=\"messages.totalMessage\"\n        [pagerLeftArrowIcon]=\"cssClasses.pagerLeftArrow\"\n        [pagerRightArrowIcon]=\"cssClasses.pagerRightArrow\"\n        [pagerPreviousIcon]=\"cssClasses.pagerPrevious\"\n        [selectedCount]=\"selected.length\"\n        [selectedMessage]=\"!!selectionType && messages.selectedMessage\"\n        [pagerNextIcon]=\"cssClasses.pagerNext\"\n        (page)=\"onFooterPage($event)\">\n      </datatable-footer>\n    </div>\n  ",
+            template: "\n    <div\n      visibilityObserver\n      (visible)=\"recalculate()\">\n      <datatable-header\n        *ngIf=\"headerHeight\"\n        [sorts]=\"sorts\"\n        [sortType]=\"sortType\"\n        [scrollbarH]=\"scrollbarH\"\n        [innerWidth]=\"innerWidth\"\n        [offsetX]=\"offsetX\"\n        [dealsWithGroup]=\"groupedRows\"\n        [columns]=\"_internalColumns\"\n        [headerHeight]=\"headerHeight\"\n        [reorderable]=\"reorderable\"\n        [sortAscendingIcon]=\"cssClasses.sortAscending\"\n        [sortDescendingIcon]=\"cssClasses.sortDescending\"\n        [allRowsSelected]=\"allRowsSelected\"\n        [selectionType]=\"selectionType\"\n        (sort)=\"onColumnSort($event)\"\n        (resize)=\"onColumnResize($event)\"\n        (reorder)=\"onColumnReorder($event)\"\n        (select)=\"onHeaderSelect($event)\"\n        (columnContextmenu)=\"onColumnContextmenu($event)\">\n      </datatable-header>\n      <datatable-body\n        [groupRowsBy]=\"groupRowsBy\"\n        [groupedRows]=\"groupedRows\"\n        [rows]=\"_internalRows\"\n        [groupExpansionDefault]=\"groupExpansionDefault\"\n        [scrollbarV]=\"scrollbarV\"\n        [scrollbarH]=\"scrollbarH\"\n        [loadingIndicator]=\"loadingIndicator\"\n        [externalPaging]=\"externalPaging\"\n        [rowHeight]=\"rowHeight\"\n        [rowCount]=\"rowCount\"\n        [offset]=\"offset\"\n        [trackByProp]=\"trackByProp\"\n        [columns]=\"_internalColumns\"\n        [pageSize]=\"pageSize\"\n        [offsetX]=\"offsetX\"\n        [rowDetail]=\"rowDetail\"\n        [groupHeader]=\"groupHeader\"\n        [selected]=\"selected\"\n        [innerWidth]=\"innerWidth\"\n        [bodyHeight]=\"bodyHeight\"\n        [selectionType]=\"selectionType\"\n        [emptyMessage]=\"messages.emptyMessage\"\n        [rowIdentity]=\"rowIdentity\"\n        [rowClass]=\"rowClass\"\n        [selectCheck]=\"selectCheck\"\n        (page)=\"onBodyPage($event)\"\n        (activate)=\"activate.emit($event)\"\n        (rowContextmenu)=\"onRowContextmenu($event)\"\n        (select)=\"onBodySelect($event)\"\n        (scroll)=\"onBodyScroll($event)\">\n      </datatable-body>\n      <datatable-footer\n        *ngIf=\"footerHeight\"\n        [rowCount]=\"rowCount\"\n        [pageSize]=\"pageSize\"\n        [offset]=\"offset\"\n        [footerHeight]=\"footerHeight\"\n        [footerTemplate]=\"footer\"\n        [totalMessage]=\"messages.totalMessage\"\n        [pagerLeftArrowIcon]=\"cssClasses.pagerLeftArrow\"\n        [pagerRightArrowIcon]=\"cssClasses.pagerRightArrow\"\n        [pagerPreviousIcon]=\"cssClasses.pagerPrevious\"\n        [selectedCount]=\"selected.length\"\n        [selectedMessage]=\"!!selectionType && messages.selectedMessage\"\n        [pagerNextIcon]=\"cssClasses.pagerNext\"\n        (page)=\"onFooterPage($event)\">\n      </datatable-footer>\n    </div>\n  ",
+            changeDetection: core_1.ChangeDetectionStrategy.OnPush,
             encapsulation: core_1.ViewEncapsulation.None,
             styles: [__webpack_require__("./src/components/datatable.component.scss")],
             host: {
@@ -4488,6 +6764,7 @@ var DatatableComponent = (function () {
             }
         }),
         __metadata("design:paramtypes", [services_1.ScrollbarHelper,
+            core_1.ChangeDetectorRef,
             core_1.ElementRef,
             core_1.KeyValueDiffers])
     ], DatatableComponent);
@@ -4619,7 +6896,7 @@ var DataTableFooterComponent = (function () {
     DataTableFooterComponent = __decorate([
         core_1.Component({
             selector: 'datatable-footer',
-            template: "\n    <div\n      class=\"datatable-footer-inner\"\n      [ngClass]=\"{'selected-count': selectedMessage}\"\n      [style.height.px]=\"footerHeight\">\n      <ng-template\n        *ngIf=\"footerTemplate\"\n        [ngTemplateOutlet]=\"footerTemplate.template\"\n        [ngOutletContext]=\"{ \n          rowCount: rowCount, \n          pageSize: pageSize, \n          selectedCount: selectedCount,\n          curPage: curPage,\n          offset: offset\n        }\">\n      </ng-template>\n      <div class=\"page-count\" *ngIf=\"!footerTemplate\">\n        <span *ngIf=\"selectedMessage\">\n          {{selectedMessage}} /\n        </span>\n            {{totalMessage}}\n      </div>\n      <datatable-pager *ngIf=\"!footerTemplate\"\n        [pagerLeftArrowIcon]=\"pagerLeftArrowIcon\"\n        [pagerRightArrowIcon]=\"pagerRightArrowIcon\"\n        [pagerPreviousIcon]=\"pagerPreviousIcon\"\n        [pagerNextIcon]=\"pagerNextIcon\"\n        [page]=\"curPage\"\n        [size]=\"pageSize\"\n        [count]=\"rowCount\"\n        [hidden]=\"!isVisible\"\n        (change)=\"page.emit($event)\">\n      </datatable-pager>\n    </div>\n  ",
+            template: "\n    <div\n      class=\"datatable-footer-inner\"\n      [ngClass]=\"{'selected-count': selectedMessage}\"\n      [style.height.px]=\"footerHeight\">\n      <ng-template\n        *ngIf=\"footerTemplate\"\n        [ngTemplateOutlet]=\"footerTemplate.template\"\n        [ngOutletContext]=\"{ \n          rowCount: rowCount, \n          pageSize: pageSize, \n          selectedCount: selectedCount,\n          curPage: curPage,\n          offset: offset\n        }\">\n      </ng-template>\n      <div class=\"page-count\" *ngIf=\"!footerTemplate\">\n        <span *ngIf=\"selectedMessage\">\n          {{selectedCount.toLocaleString()}} {{selectedMessage}} / \n        </span>\n        {{rowCount.toLocaleString()}} {{totalMessage}}\n      </div>\n      <datatable-pager *ngIf=\"!footerTemplate\"\n        [pagerLeftArrowIcon]=\"pagerLeftArrowIcon\"\n        [pagerRightArrowIcon]=\"pagerRightArrowIcon\"\n        [pagerPreviousIcon]=\"pagerPreviousIcon\"\n        [pagerNextIcon]=\"pagerNextIcon\"\n        [page]=\"curPage\"\n        [size]=\"pageSize\"\n        [count]=\"rowCount\"\n        [hidden]=\"!isVisible\"\n        (change)=\"page.emit($event)\">\n      </datatable-pager>\n    </div>\n  ",
             host: {
                 class: 'datatable-footer'
             },
@@ -4805,17 +7082,8 @@ var DataTablePagerComponent = (function () {
         var isMaxSized = maxSize < this.totalPages;
         page = page || this.page;
         if (isMaxSized) {
-            startPage = page - Math.floor(maxSize / 2);
-            endPage = page + Math.floor(maxSize / 2), this.totalPages;
-            if (startPage < 1) {
-                startPage = 1;
-                //endPage = Math.max(startPage + maxSize - 1, this.totalPages);
-                endPage = maxSize;
-            }
-            else if (endPage > this.totalPages) {
-                startPage = Math.max(this.totalPages - maxSize + 1, 1);
-                endPage = this.totalPages;
-            }
+            startPage = ((Math.ceil(page / maxSize) - 1) * maxSize) + 1;
+            endPage = Math.min(startPage + maxSize - 1, this.totalPages);
         }
         for (var num = startPage; num <= endPage; num++) {
             pages.push({
@@ -4895,15 +7163,45 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("@angular/core");
 var types_1 = __webpack_require__("./src/types/index.ts");
 var utils_1 = __webpack_require__("./src/utils/index.ts");
-var events_1 = __webpack_require__("./src/events.ts");
 var DataTableHeaderCellComponent = (function () {
-    function DataTableHeaderCellComponent() {
+    function DataTableHeaderCellComponent(cd) {
+        this.cd = cd;
         this.sort = new core_1.EventEmitter();
         this.select = new core_1.EventEmitter();
         this.columnContextmenu = new core_1.EventEmitter(false);
         this.sortFn = this.onSort.bind(this);
         this.selectFn = this.select.emit.bind(this.select);
+        this.cellContext = {
+            column: this.column,
+            sortDir: this.sortDir,
+            sortFn: this.sortFn,
+            allRowsSelected: this.allRowsSelected,
+            selectFn: this.selectFn
+        };
     }
+    Object.defineProperty(DataTableHeaderCellComponent.prototype, "allRowsSelected", {
+        get: function () {
+            return this._allRowsSelected;
+        },
+        set: function (value) {
+            this._allRowsSelected = value;
+            this.cellContext.allRowsSelected = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DataTableHeaderCellComponent.prototype, "column", {
+        get: function () {
+            return this._column;
+        },
+        set: function (column) {
+            this._column = column;
+            this.cellContext.column = column;
+            this.cd.markForCheck();
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(DataTableHeaderCellComponent.prototype, "sorts", {
         get: function () {
             return this._sorts;
@@ -4912,6 +7210,7 @@ var DataTableHeaderCellComponent = (function () {
             this._sorts = val;
             this.sortDir = this.calcSortDir(val);
             this.sortClass = this.calcSortClass(this.sortDir);
+            this.cd.markForCheck();
         },
         enumerable: true,
         configurable: true
@@ -5027,12 +7326,8 @@ var DataTableHeaderCellComponent = (function () {
     };
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Number)
+        __metadata("design:type", String)
     ], DataTableHeaderCellComponent.prototype, "sortType", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Object)
-    ], DataTableHeaderCellComponent.prototype, "column", void 0);
     __decorate([
         core_1.Input(),
         __metadata("design:type", String)
@@ -5043,12 +7338,18 @@ var DataTableHeaderCellComponent = (function () {
     ], DataTableHeaderCellComponent.prototype, "sortDescendingIcon", void 0);
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Boolean)
-    ], DataTableHeaderCellComponent.prototype, "allRowsSelected", void 0);
+        __metadata("design:type", Object),
+        __metadata("design:paramtypes", [Object])
+    ], DataTableHeaderCellComponent.prototype, "allRowsSelected", null);
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Number)
+        __metadata("design:type", String)
     ], DataTableHeaderCellComponent.prototype, "selectionType", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Object),
+        __metadata("design:paramtypes", [Object])
+    ], DataTableHeaderCellComponent.prototype, "column", null);
     __decorate([
         core_1.HostBinding('style.height.px'),
         core_1.Input(),
@@ -5099,17 +7400,19 @@ var DataTableHeaderCellComponent = (function () {
     __decorate([
         core_1.HostListener('contextmenu', ['$event']),
         __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
+        __metadata("design:paramtypes", [MouseEvent]),
         __metadata("design:returntype", void 0)
     ], DataTableHeaderCellComponent.prototype, "onContextmenu", null);
     DataTableHeaderCellComponent = __decorate([
         core_1.Component({
             selector: 'datatable-header-cell',
-            template: "\n    <div>\n      <label\n        *ngIf=\"isCheckboxable\" \n        class=\"datatable-checkbox\">\n        <input \n          type=\"checkbox\"\n          [checked]=\"allRowsSelected\"\n          (change)=\"select.emit(!allRowsSelected)\" \n        />\n      </label>\n      <span \n        *ngIf=\"!column.headerTemplate\"\n        class=\"datatable-header-cell-wrapper\">\n        <span\n          class=\"datatable-header-cell-label draggable\"\n          (click)=\"onSort()\"\n          [innerHTML]=\"name\">\n        </span>\n      </span>\n      <ng-template\n        *ngIf=\"column.headerTemplate\"\n        [ngTemplateOutlet]=\"column.headerTemplate\"\n        [ngOutletContext]=\"{ \n          column: column, \n          sortDir: sortDir,\n          sortFn: sortFn,\n          allRowsSelected: allRowsSelected,\n          selectFn: selectFn\n        }\">\n      </ng-template>\n      <span\n        (click)=\"onSort()\"\n        [class]=\"sortClass\">\n      </span>\n    </div>\n  ",
+            template: "\n    <div>\n      <label\n        *ngIf=\"isCheckboxable\"\n        class=\"datatable-checkbox\">\n        <input\n          type=\"checkbox\"\n          [checked]=\"allRowsSelected\"\n          (change)=\"select.emit(!allRowsSelected)\"\n        />\n      </label>\n      <span\n        *ngIf=\"!column.headerTemplate\"\n        class=\"datatable-header-cell-wrapper\">\n        <span\n          class=\"datatable-header-cell-label draggable\"\n          (click)=\"onSort()\"\n          [innerHTML]=\"name\">\n        </span>\n      </span>\n      <ng-template\n        *ngIf=\"column.headerTemplate\"\n        [ngTemplateOutlet]=\"column.headerTemplate\"\n        [ngTemplateOutletContext]=\"cellContext\">\n      </ng-template>\n      <span\n        (click)=\"onSort()\"\n        [class]=\"sortClass\">\n      </span>\n    </div>\n  ",
             host: {
                 class: 'datatable-header-cell'
-            }
-        })
+            },
+            changeDetection: core_1.ChangeDetectionStrategy.OnPush
+        }),
+        __metadata("design:paramtypes", [core_1.ChangeDetectorRef])
     ], DataTableHeaderCellComponent);
     return DataTableHeaderCellComponent;
 }());
@@ -5152,6 +7455,20 @@ var DataTableHeaderComponent = (function () {
         this.select = new core_1.EventEmitter();
         this.columnContextmenu = new core_1.EventEmitter(false);
     }
+    Object.defineProperty(DataTableHeaderComponent.prototype, "innerWidth", {
+        get: function () {
+            return this._innerWidth;
+        },
+        set: function (val) {
+            this._innerWidth = val;
+            if (this._columns) {
+                var colByPin = utils_1.columnsByPin(this._columns);
+                this.columnGroupWidths = utils_1.columnGroupWidths(colByPin, this._columns);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(DataTableHeaderComponent.prototype, "headerHeight", {
         get: function () {
             return this._headerHeight;
@@ -5188,7 +7505,7 @@ var DataTableHeaderComponent = (function () {
     DataTableHeaderComponent.prototype.onLongPressEnd = function (_a) {
         var event = _a.event, model = _a.model;
         this.dragEventTarget = event;
-        // delay resetting so sort can be 
+        // delay resetting so sort can be
         // prevented if we were dragging
         setTimeout(function () {
             model.dragging = false;
@@ -5299,8 +7616,13 @@ var DataTableHeaderComponent = (function () {
     ], DataTableHeaderComponent.prototype, "scrollbarH", void 0);
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Number)
-    ], DataTableHeaderComponent.prototype, "innerWidth", void 0);
+        __metadata("design:type", Boolean)
+    ], DataTableHeaderComponent.prototype, "dealsWithGroup", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Number),
+        __metadata("design:paramtypes", [Number])
+    ], DataTableHeaderComponent.prototype, "innerWidth", null);
     __decorate([
         core_1.Input(),
         __metadata("design:type", Number)
@@ -5311,7 +7633,7 @@ var DataTableHeaderComponent = (function () {
     ], DataTableHeaderComponent.prototype, "sorts", void 0);
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Number)
+        __metadata("design:type", String)
     ], DataTableHeaderComponent.prototype, "sortType", void 0);
     __decorate([
         core_1.Input(),
@@ -5319,7 +7641,7 @@ var DataTableHeaderComponent = (function () {
     ], DataTableHeaderComponent.prototype, "allRowsSelected", void 0);
     __decorate([
         core_1.Input(),
-        __metadata("design:type", Number)
+        __metadata("design:type", String)
     ], DataTableHeaderComponent.prototype, "selectionType", void 0);
     __decorate([
         core_1.Input(),
@@ -5364,7 +7686,7 @@ var DataTableHeaderComponent = (function () {
     DataTableHeaderComponent = __decorate([
         core_1.Component({
             selector: 'datatable-header',
-            template: "\n    <div\n      orderable\n      (reorder)=\"onColumnReordered($event)\"\n      [style.width.px]=\"columnGroupWidths.total\"\n      class=\"datatable-header-inner\">\n      <div\n        *ngFor=\"let colGroup of columnsByPin; trackBy: trackByGroups\"\n        [class]=\"'datatable-row-' + colGroup.type\"\n        [ngStyle]=\"stylesByGroup(colGroup.type)\">\n        <datatable-header-cell\n          *ngFor=\"let column of colGroup.columns; trackBy: columnTrackingFn\"\n          resizeable\n          [resizeEnabled]=\"column.resizeable\"\n          (resize)=\"onColumnResized($event, column)\"\n          long-press\n          [pressModel]=\"column\"\n          [pressEnabled]=\"reorderable && column.draggable\"\n          (longPressStart)=\"onLongPressStart($event)\"\n          (longPressEnd)=\"onLongPressEnd($event)\"\n          draggable\n          [dragX]=\"reorderable && column.draggable && column.dragging\"\n          [dragY]=\"false\"\n          [dragModel]=\"column\"\n          [dragEventTarget]=\"dragEventTarget\"\n          [headerHeight]=\"headerHeight\"\n          [column]=\"column\"\n          [sortType]=\"sortType\"\n          [sorts]=\"sorts\"\n          [selectionType]=\"selectionType\"\n          [sortAscendingIcon]=\"sortAscendingIcon\"\n          [sortDescendingIcon]=\"sortDescendingIcon\"\n          [allRowsSelected]=\"allRowsSelected\"\n          (sort)=\"onSort($event)\"\n          (select)=\"select.emit($event)\"\n          (columnContextmenu)=\"columnContextmenu.emit($event)\">\n        </datatable-header-cell>\n      </div>\n    </div>\n  ",
+            template: "\n    <div\n      orderable\n      (reorder)=\"onColumnReordered($event)\"\n      [style.width.px]=\"columnGroupWidths.total\"\n      class=\"datatable-header-inner\">\n     \n      <div\n        *ngFor=\"let colGroup of columnsByPin; trackBy: trackByGroups\"\n        [class]=\"'datatable-row-' + colGroup.type\"\n        [ngStyle]=\"stylesByGroup(colGroup.type)\">\n        <datatable-header-cell\n          *ngFor=\"let column of colGroup.columns; trackBy: columnTrackingFn\"\n          resizeable\n          [resizeEnabled]=\"column.resizeable\"\n          (resize)=\"onColumnResized($event, column)\"\n          long-press\n          [pressModel]=\"column\"\n          [pressEnabled]=\"reorderable && column.draggable\"\n          (longPressStart)=\"onLongPressStart($event)\"\n          (longPressEnd)=\"onLongPressEnd($event)\"\n          draggable\n          [dragX]=\"reorderable && column.draggable && column.dragging\"\n          [dragY]=\"false\"\n          [dragModel]=\"column\"\n          [dragEventTarget]=\"dragEventTarget\"\n          [headerHeight]=\"headerHeight\"\n          [column]=\"column\"\n          [sortType]=\"sortType\"\n          [sorts]=\"sorts\"\n          [selectionType]=\"selectionType\"\n          [sortAscendingIcon]=\"sortAscendingIcon\"\n          [sortDescendingIcon]=\"sortDescendingIcon\"\n          [allRowsSelected]=\"allRowsSelected\"\n          (sort)=\"onSort($event)\"\n          (select)=\"select.emit($event)\"\n          (columnContextmenu)=\"columnContextmenu.emit($event)\">\n        </datatable-header-cell>\n      </div>\n    </div>\n  ",
             host: {
                 class: 'datatable-header'
             }
@@ -5481,23 +7803,15 @@ var DatatableRowDetailDirective = (function () {
         /**
          * The detail row height is required especially
          * when virtual scroll is enabled.
-         *
-         * @type {number|function(row?:any,index?:number): number}
-         * @memberOf DatatableComponent
          */
         this.rowHeight = 0;
         /**
          * Row detail row visbility was toggled.
-         *
-         * @type {EventEmitter<any>}
-         * @memberOf DatatableComponent
          */
         this.toggle = new core_1.EventEmitter();
     }
     /**
      * Toggle the expansion of the row
-     *
-     * @param rowIndex
      */
     DatatableRowDetailDirective.prototype.toggleExpandRow = function (row) {
         this.toggle.emit({
@@ -5507,8 +7821,6 @@ var DatatableRowDetailDirective = (function () {
     };
     /**
      * API method to expand all the rows.
-     *
-     * @memberOf DatatableComponent
      */
     DatatableRowDetailDirective.prototype.expandAllRows = function () {
         this.toggle.emit({
@@ -5518,8 +7830,6 @@ var DatatableRowDetailDirective = (function () {
     };
     /**
      * API method to collapse all the rows.
-     *
-     * @memberOf DatatableComponent
      */
     DatatableRowDetailDirective.prototype.collapseAllRows = function () {
         this.toggle.emit({
@@ -5598,23 +7908,27 @@ var NgxDatatableModule = (function () {
                 components_1.DataTableBodyRowComponent,
                 components_1.DataTableRowWrapperComponent,
                 components_1.DatatableRowDetailDirective,
+                components_1.DatatableGroupHeaderDirective,
                 components_1.DatatableRowDetailTemplateDirective,
                 components_1.DataTableBodyCellComponent,
                 components_1.DataTableSelectionComponent,
                 components_1.DataTableColumnHeaderDirective,
                 components_1.DataTableColumnCellDirective,
-                components_1.DatatableFooterDirective
+                components_1.DatatableFooterDirective,
+                components_1.DatatableGroupHeaderTemplateDirective
             ],
             exports: [
                 components_1.DatatableComponent,
                 components_1.DatatableRowDetailDirective,
+                components_1.DatatableGroupHeaderDirective,
                 components_1.DatatableRowDetailTemplateDirective,
                 components_1.DataTableColumnDirective,
                 components_1.DataTableColumnHeaderDirective,
                 components_1.DataTableColumnCellDirective,
                 components_1.DataTableFooterTemplateDirective,
                 components_1.DatatableFooterDirective,
-                components_1.DataTablePagerComponent
+                components_1.DataTablePagerComponent,
+                components_1.DatatableGroupHeaderTemplateDirective
             ]
         })
     ], NgxDatatableModule);
@@ -5802,7 +8116,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("@angular/core");
 var Observable_1 = __webpack_require__("./node_modules/rxjs/Observable.js");
 __webpack_require__("./node_modules/rxjs/add/operator/takeUntil.js");
-var events_1 = __webpack_require__("./src/events.ts");
 var LongPressDirective = (function () {
     function LongPressDirective() {
         this.pressEnabled = true;
@@ -5932,7 +8245,7 @@ var LongPressDirective = (function () {
     __decorate([
         core_1.HostListener('mousedown', ['$event']),
         __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
+        __metadata("design:paramtypes", [MouseEvent]),
         __metadata("design:returntype", void 0)
     ], LongPressDirective.prototype, "onMouseDown", null);
     LongPressDirective = __decorate([
@@ -5970,7 +8283,7 @@ var OrderableDirective = (function () {
     function OrderableDirective(differs, document) {
         this.document = document;
         this.reorder = new core_1.EventEmitter();
-        this.differ = differs.find({}).create(null);
+        this.differ = differs.find({}).create();
     }
     OrderableDirective.prototype.ngAfterContentInit = function () {
         // HACK: Investigate Better Way
@@ -6103,7 +8416,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("@angular/core");
 var Observable_1 = __webpack_require__("./node_modules/rxjs/Observable.js");
-var events_1 = __webpack_require__("./src/events.ts");
 __webpack_require__("./node_modules/rxjs/add/operator/takeUntil.js");
 var ResizeableDirective = (function () {
     function ResizeableDirective(element) {
@@ -6180,7 +8492,7 @@ var ResizeableDirective = (function () {
     __decorate([
         core_1.HostListener('mousedown', ['$event']),
         __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
+        __metadata("design:paramtypes", [MouseEvent]),
         __metadata("design:returntype", void 0)
     ], ResizeableDirective.prototype, "onMousedown", null);
     ResizeableDirective = __decorate([
@@ -6263,7 +8575,7 @@ var VisibilityDirective = (function () {
                 });
             }
         };
-        setTimeout(function () { return check(); });
+        this.timeout = setTimeout(function () { return check(); });
     };
     __decorate([
         core_1.HostBinding('class.visible'),
@@ -6284,18 +8596,6 @@ exports.VisibilityDirective = VisibilityDirective;
 
 /***/ }),
 
-/***/ "./src/events.ts":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(global) {
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.MouseEvent = global.MouseEvent;
-exports.KeyboardEvent = global.KeyboardEvent;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/global.js")))
-
-/***/ }),
 
 /***/ "./src/index.ts":
 /***/ (function(module, exports, __webpack_require__) {
@@ -6350,9 +8650,6 @@ var platform_browser_1 = __webpack_require__("@angular/platform-browser");
 /**
  * Gets the width of the scrollbar.  Nesc for windows
  * http://stackoverflow.com/a/13382873/888165
- *
- * @export
- * @class ScrollbarHelper
  */
 var ScrollbarHelper = (function () {
     function ScrollbarHelper(document) {
@@ -6394,8 +8691,8 @@ exports.ScrollbarHelper = ScrollbarHelper;
 Object.defineProperty(exports, "__esModule", { value: true });
 var ClickType;
 (function (ClickType) {
-    ClickType[ClickType["single"] = 'single'] = "single";
-    ClickType[ClickType["double"] = 'double'] = "double";
+    ClickType["single"] = "single";
+    ClickType["double"] = "double";
 })(ClickType = exports.ClickType || (exports.ClickType = {}));
 
 
@@ -6409,9 +8706,9 @@ var ClickType;
 Object.defineProperty(exports, "__esModule", { value: true });
 var ColumnMode;
 (function (ColumnMode) {
-    ColumnMode[ColumnMode["standard"] = 'standard'] = "standard";
-    ColumnMode[ColumnMode["flex"] = 'flex'] = "flex";
-    ColumnMode[ColumnMode["force"] = 'force'] = "force";
+    ColumnMode["standard"] = "standard";
+    ColumnMode["flex"] = "flex";
+    ColumnMode["force"] = "force";
 })(ColumnMode = exports.ColumnMode || (exports.ColumnMode = {}));
 
 
@@ -6425,8 +8722,8 @@ var ColumnMode;
 Object.defineProperty(exports, "__esModule", { value: true });
 var ContextmenuType;
 (function (ContextmenuType) {
-    ContextmenuType[ContextmenuType["header"] = 'header'] = "header";
-    ContextmenuType[ContextmenuType["body"] = 'body'] = "body";
+    ContextmenuType["header"] = "header";
+    ContextmenuType["body"] = "body";
 })(ContextmenuType = exports.ContextmenuType || (exports.ContextmenuType = {}));
 
 
@@ -6459,11 +8756,11 @@ __export(__webpack_require__("./src/types/contextmenu.type.ts"));
 Object.defineProperty(exports, "__esModule", { value: true });
 var SelectionType;
 (function (SelectionType) {
-    SelectionType[SelectionType["single"] = 'single'] = "single";
-    SelectionType[SelectionType["multi"] = 'multi'] = "multi";
-    SelectionType[SelectionType["multiClick"] = 'multiClick'] = "multiClick";
-    SelectionType[SelectionType["cell"] = 'cell'] = "cell";
-    SelectionType[SelectionType["checkbox"] = 'checkbox'] = "checkbox";
+    SelectionType["single"] = "single";
+    SelectionType["multi"] = "multi";
+    SelectionType["multiClick"] = "multiClick";
+    SelectionType["cell"] = "cell";
+    SelectionType["checkbox"] = "checkbox";
 })(SelectionType = exports.SelectionType || (exports.SelectionType = {}));
 
 
@@ -6477,8 +8774,8 @@ var SelectionType;
 Object.defineProperty(exports, "__esModule", { value: true });
 var SortDirection;
 (function (SortDirection) {
-    SortDirection[SortDirection["asc"] = 'asc'] = "asc";
-    SortDirection[SortDirection["desc"] = 'desc'] = "desc";
+    SortDirection["asc"] = "asc";
+    SortDirection["desc"] = "desc";
 })(SortDirection = exports.SortDirection || (exports.SortDirection = {}));
 
 
@@ -6492,8 +8789,8 @@ var SortDirection;
 Object.defineProperty(exports, "__esModule", { value: true });
 var SortType;
 (function (SortType) {
-    SortType[SortType["single"] = 'single'] = "single";
-    SortType[SortType["multi"] = 'multi'] = "multi";
+    SortType["single"] = "single";
+    SortType["multi"] = "multi";
 })(SortType = exports.SortType || (exports.SortType = {}));
 
 
@@ -6508,8 +8805,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Converts strings from something to camel case
  * http://stackoverflow.com/questions/10425287/convert-dash-separated-string-to-camelcase
- * @param  {string} str
- * @return {string} camel case string
  */
 function camelCase(str) {
     // Replace special characters with a space
@@ -6528,10 +8823,6 @@ exports.camelCase = camelCase;
 /**
  * Converts strings from camel case to words
  * http://stackoverflow.com/questions/7225407/convert-camelcasetext-to-camel-case-text
- *
- * @export
- * @param {any} str
- * @returns string
  */
 function deCamelCase(str) {
     return str
@@ -6554,10 +8845,6 @@ var id_1 = __webpack_require__("./src/utils/id.ts");
 var column_prop_getters_1 = __webpack_require__("./src/utils/column-prop-getters.ts");
 /**
  * Sets the column defaults
- *
- * @export
- * @param {any[]} columns
- * @returns
  */
 function setColumnDefaults(columns) {
     if (!columns)
@@ -6569,15 +8856,18 @@ function setColumnDefaults(columns) {
         }
         // prop can be numeric; zero is valid not a missing prop
         // translate name => prop
-        if (column.prop == null && column.name) {
+        if (isNullOrUndefined(column.prop) && column.name) {
             column.prop = camel_case_1.camelCase(column.name);
         }
         if (!column.$$valueGetter) {
             column.$$valueGetter = column_prop_getters_1.getterForProp(column.prop);
         }
         // format props if no name passed
-        if (column.prop != null && !column.name) {
+        if (!isNullOrUndefined(column.prop) && isNullOrUndefined(column.name)) {
             column.name = camel_case_1.deCamelCase(String(column.prop));
+        }
+        if (isNullOrUndefined(column.prop) && isNullOrUndefined(column.name)) {
+            column.name = ''; // Fixes IE and Edge displaying `null`
         }
         if (!column.hasOwnProperty('resizeable')) {
             column.resizeable = true;
@@ -6597,12 +8887,12 @@ function setColumnDefaults(columns) {
     }
 }
 exports.setColumnDefaults = setColumnDefaults;
+function isNullOrUndefined(value) {
+    return value === null || value === undefined;
+}
+exports.isNullOrUndefined = isNullOrUndefined;
 /**
  * Translates templates definitions to objects
- *
- * @export
- * @param {DataTableColumnDirective[]} templates
- * @returns {any[]}
  */
 function translateTemplates(templates) {
     var result = [];
@@ -6672,6 +8962,8 @@ exports.getterForProp = getterForProp;
  * @returns {any} or '' if invalid index
  */
 function numericIndexGetter(row, index) {
+    if (row == null)
+        return '';
     // mimic behavior of deepValueGetter
     if (!row || index == null)
         return row;
@@ -6689,6 +8981,8 @@ exports.numericIndexGetter = numericIndexGetter;
  * @returns {any}
  */
 function shallowValueGetter(obj, fieldName) {
+    if (obj == null)
+        return '';
     if (!obj || !fieldName)
         return obj;
     var value = obj[fieldName];
@@ -6703,6 +8997,8 @@ exports.shallowValueGetter = shallowValueGetter;
  * @param {string} path
  */
 function deepValueGetter(obj, path) {
+    if (obj == null)
+        return '';
     if (!obj || !path)
         return obj;
     // check if path matches a root-level field
@@ -6735,7 +9031,6 @@ exports.deepValueGetter = deepValueGetter;
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Returns the columns by pin.
- * @param {array} cols
  */
 function columnsByPin(cols) {
     var ret = {
@@ -6762,22 +9057,18 @@ function columnsByPin(cols) {
 exports.columnsByPin = columnsByPin;
 /**
  * Returns the widths of all group sets of a column
- * @param {object} groups
- * @param {array} all
  */
 function columnGroupWidths(groups, all) {
     return {
         left: columnTotalWidth(groups.left),
         center: columnTotalWidth(groups.center),
         right: columnTotalWidth(groups.right),
-        total: columnTotalWidth(all)
+        total: Math.floor(columnTotalWidth(all))
     };
 }
 exports.columnGroupWidths = columnGroupWidths;
 /**
  * Calculates the total width of all columns and their groups
- * @param {array} columns
- * @param {string} prop width to get
  */
 function columnTotalWidth(columns, prop) {
     var totalWidth = 0;
@@ -6794,8 +9085,6 @@ function columnTotalWidth(columns, prop) {
 exports.columnTotalWidth = columnTotalWidth;
 /**
  * Calculates the total width of all columns and their groups
- * @param {array} columns
- * @param {string} property width to get
  */
 function columnsTotalWidth(columns, prop) {
     var totalWidth = 0;
@@ -6816,6 +9105,16 @@ function columnsByPinArr(val) {
     return colsByPinArr;
 }
 exports.columnsByPinArr = columnsByPinArr;
+function allColumnsByPinArr(val) {
+    var colsByPinArr = [];
+    var colsByPin = columnsByPin(val);
+    var colsTest = [];
+    colsByPinArr.push({ type: 'left', columns: colsByPin['left'] });
+    colsByPinArr.push({ type: 'center', columns: colsByPin['center'] });
+    colsByPinArr.push({ type: 'right', columns: colsByPin['right'] });
+    return colsByPinArr;
+}
+exports.allColumnsByPinArr = allColumnsByPinArr;
 
 
 /***/ }),
@@ -6836,11 +9135,6 @@ if (typeof document !== 'undefined' && !document.elementsFromPoint) {
  * https://developer.mozilla.org/en-US/docs/Web/API/Document/elementsFromPoint
  * https://gist.github.com/iddan/54d5d9e58311b0495a91bf06de661380
  * https://gist.github.com/oslego/7265412
- *
- * @export
- * @param {any} x
- * @param {any} y
- * @returns
  */
 function elementsFromPoint(x, y) {
     var elements = [];
@@ -6868,7 +9162,7 @@ function elementsFromPoint(x, y) {
     return elements;
 }
 exports.elementsFromPoint = elementsFromPoint;
-/*tslint:enable*/ 
+/*tslint:enable*/
 
 
 /***/ }),
@@ -6946,7 +9240,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var column_1 = __webpack_require__("./src/utils/column.ts");
 /**
  * Calculates the Total Flex Grow
- * @param {array}
  */
 function getTotalFlexGrow(columns) {
     var totalFlexGrow = 0;
@@ -6960,8 +9253,6 @@ exports.getTotalFlexGrow = getTotalFlexGrow;
 /**
  * Adjusts the column widths.
  * Inspired by: https://github.com/facebook/fixed-data-table/blob/master/src/FixedDataTableWidthHelper.js
- * @param {array} all columns
- * @param {int} width
  */
 function adjustColumnWidths(allColumns, expectedWidth) {
     var columnsWidth = column_1.columnsTotalWidth(allColumns);
@@ -6974,9 +9265,6 @@ function adjustColumnWidths(allColumns, expectedWidth) {
 exports.adjustColumnWidths = adjustColumnWidths;
 /**
  * Resizes columns based on the flexGrow property, while respecting manually set widths
- * @param {array} colsByGroup
- * @param {int} maxWidth
- * @param {int} totalFlexGrow
  */
 function scaleColumns(colsByGroup, maxWidth, totalFlexGrow) {
     // calculate total width and flexgrow points for coulumns that can be resized
@@ -7035,12 +9323,6 @@ function scaleColumns(colsByGroup, maxWidth, totalFlexGrow) {
  *
  *  - If the grid starts off small but then becomes greater than the size ( + / - )
  *    the width should use the original width; not the newly proportioned widths.
- *
- * @param {array} allColumns
- * @param {int} expectedWidth
- * @param {int} startIdx
- * @param {boolean} allowBleed
- * @param {int} defaultColWidth
  */
 function forceFillColumnWidths(allColumns, expectedWidth, startIdx, allowBleed, defaultColWidth) {
     if (defaultColWidth === void 0) { defaultColWidth = 300; }
@@ -7093,9 +9375,6 @@ function forceFillColumnWidths(allColumns, expectedWidth, startIdx, allowBleed, 
 exports.forceFillColumnWidths = forceFillColumnWidths;
 /**
  * Remove the processed columns from the current active columns.
- *
- * @param columnsToResize  Array containing the columns that need to be resized.
- * @param columnsProcessed Array containing the columns that have already been processed.
  */
 function removeProcessedColumns(columnsToResize, columnsProcessed) {
     for (var _i = 0, columnsProcessed_1 = columnsProcessed; _i < columnsProcessed_1.length; _i++) {
@@ -7106,10 +9385,6 @@ function removeProcessedColumns(columnsToResize, columnsProcessed) {
 }
 /**
  * Gets the width of the columns
- *
- * @param {array} allColumns
- * @param {number} [defaultColWidth=300]
- * @returns {number}
  */
 function getContentWidth(allColumns, defaultColWidth) {
     if (defaultColWidth === void 0) { defaultColWidth = 300; }
@@ -7135,9 +9410,10 @@ var cache = {};
 var testStyle = typeof document !== 'undefined' ? document.createElement('div').style : undefined;
 // Get Prefix
 // http://davidwalsh.name/vendor-prefix
-var prefix = (function () {
+var prefix = function () {
     var styles = typeof window !== 'undefined' ? window.getComputedStyle(document.documentElement, '') : undefined;
-    var pre = typeof styles !== 'undefined' ? (Array.prototype.slice.call(styles).join('').match(/-(moz|webkit|ms)-/))[1] : undefined;
+    var pre = typeof styles !== 'undefined'
+        ? (Array.prototype.slice.call(styles).join('').match(/-(moz|webkit|ms)-/))[1] : undefined;
     var dom = typeof pre !== 'undefined' ? ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1] : undefined;
     return dom ? {
         dom: dom,
@@ -7145,7 +9421,7 @@ var prefix = (function () {
         css: "-" + pre + "-",
         js: pre[0].toUpperCase() + pre.substr(1)
     } : undefined;
-})();
+}();
 function getVendorPrefixedName(property) {
     var name = camel_case_1.camelCase(property);
     if (!cache[name]) {
@@ -7201,7 +9477,7 @@ var RowHeightCache = (function () {
      * @param detailRowHeight The detail row height.
      */
     RowHeightCache.prototype.initCache = function (details) {
-        var rows = details.rows, rowHeight = details.rowHeight, detailRowHeight = details.detailRowHeight, externalVirtual = details.externalVirtual, rowCount = details.rowCount;
+        var rows = details.rows, rowHeight = details.rowHeight, detailRowHeight = details.detailRowHeight, externalVirtual = details.externalVirtual, rowCount = details.rowCount, rowIndexes = details.rowIndexes, rowExpansions = details.rowExpansions;
         var isFn = typeof rowHeight === 'function';
         var isDetailFn = typeof detailRowHeight === 'function';
         if (!isFn && isNaN(rowHeight)) {
@@ -7224,9 +9500,11 @@ var RowHeightCache = (function () {
             }
             // Add the detail row height to the already expanded rows.
             // This is useful for the table that goes through a filter or sort.
-            if (row && row.$$expanded === 1) {
+            var expanded = rowExpansions.get(row);
+            if (row && expanded === 1) {
                 if (isDetailFn) {
-                    currentRowHeight += detailRowHeight(row, row.$$index);
+                    var index = rowIndexes.get(row);
+                    currentRowHeight += detailRowHeight(row, index);
                 }
                 else {
                     currentRowHeight += detailRowHeight;
@@ -7238,9 +9516,6 @@ var RowHeightCache = (function () {
     /**
      * Given the ScrollY position i.e. sum, provide the rowIndex
      * that is present in the current view port.  Below handles edge cases.
-     *
-     * @param scrollY - The scrollY position.
-     * @returns {number} - Index representing the first row visible in the viewport
      */
     RowHeightCache.prototype.getRowIndex = function (scrollY) {
         if (scrollY === 0)
@@ -7250,10 +9525,6 @@ var RowHeightCache = (function () {
     /**
      * When a row is expanded or rowHeight is changed, update the height.  This can
      * be utilized in future when Angular Data table supports dynamic row heights.
-     *
-     *
-     * @param atRowIndex Update the data at this index row in the grid.
-     * @param byRowHeight Update by the rowHeight provided.
      */
     RowHeightCache.prototype.update = function (atRowIndex, byRowHeight) {
         if (!this.treeArray.length) {
@@ -7268,9 +9539,6 @@ var RowHeightCache = (function () {
     };
     /**
      * Range Sum query from 1 to the rowIndex
-     *
-     * @param atIndex The row index until which the total height needs to be obtained.
-     * @returns {number} The total height from row 1 to the rowIndex.
      */
     RowHeightCache.prototype.query = function (atIndex) {
         if (!this.treeArray.length) {
@@ -7286,9 +9554,6 @@ var RowHeightCache = (function () {
     };
     /**
      * Find the total height between 2 row indexes
-     * @param atIndexA The row index from
-     * @param atIndexB The row index to
-     * @returns {number} total pixel height between 2 row indexes.
      */
     RowHeightCache.prototype.queryBetween = function (atIndexA, atIndexB) {
         return this.query(atIndexB) - this.query(atIndexA - 1);
@@ -7296,9 +9561,6 @@ var RowHeightCache = (function () {
     /**
      * Given the ScrollY position i.e. sum, provide the rowIndex
      * that is present in the current view port.
-     *
-     * @param sum - The scrollY position.
-     * @returns {number} - Index representing the first row visible in the viewport
      */
     RowHeightCache.prototype.calcRowIndex = function (sum) {
         if (!this.treeArray.length)
@@ -7384,9 +9646,6 @@ var types_1 = __webpack_require__("./src/types/index.ts");
 var column_prop_getters_1 = __webpack_require__("./src/utils/column-prop-getters.ts");
 /**
  * Gets the next sort direction
- * @param  {SortType}      sortType
- * @param  {SortDirection} currentSort
- * @return {SortDirection}
  */
 function nextSortDir(sortType, current) {
     if (sortType === types_1.SortType.single) {
@@ -7413,9 +9672,6 @@ exports.nextSortDir = nextSortDir;
 /**
  * Adapted from fueld-ui on 6/216
  * https://github.com/FuelInteractive/fuel-ui/tree/master/src/pipes/OrderBy
- * @param  {any}    a
- * @param  {any}    b
- * @return {number} position
  */
 function orderByComparator(a, b) {
     if (a === null || typeof a === 'undefined')
@@ -7451,16 +9707,12 @@ function orderByComparator(a, b) {
 exports.orderByComparator = orderByComparator;
 /**
  * Sorts the rows
- *
- * @export
- * @param {any[]} rows
- * @param {any[]} columns
- * @param {any[]} dirs
- * @returns
  */
 function sortRows(rows, columns, dirs) {
-    if (!rows || !dirs || !dirs.length || !columns)
-        return rows;
+    if (!rows)
+        return [];
+    if (!dirs || !dirs.length || !columns)
+        return rows.slice();
     var temp = rows.slice();
     var cols = columns.reduce(function (obj, col) {
         if (col.comparator && typeof col.comparator === 'function') {
@@ -7509,12 +9761,6 @@ exports.sortRows = sortRows;
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Throttle a function
- *
- * @export
- * @param {*} func
- * @param {number} wait
- * @param {*} [options]
- * @returns
  */
 function throttle(func, wait, options) {
     options = options || {};
@@ -7556,11 +9802,6 @@ exports.throttle = throttle;
  *    throttleable(10)
  *    myFn() { ... }
  *  }
- *
- * @export
- * @param {number} duration
- * @param {*} [options]
- * @returns
  */
 function throttleable(duration, options) {
     return function innerDecorator(target, key, descriptor) {
@@ -7596,7 +9837,7 @@ var transform = typeof window !== 'undefined' ? prefixes_1.getVendorPrefixedName
 var backfaceVisibility = typeof window !== 'undefined' ? prefixes_1.getVendorPrefixedName('backfaceVisibility') : undefined;
 var hasCSSTransforms = typeof window !== 'undefined' ? !!prefixes_1.getVendorPrefixedName('transform') : undefined;
 var hasCSS3DTransforms = typeof window !== 'undefined' ? !!prefixes_1.getVendorPrefixedName('perspective') : undefined;
-var ua = typeof window !== 'undefined' ? window.navigator.userAgent : "Chrome";
+var ua = typeof window !== 'undefined' ? window.navigator.userAgent : 'Chrome';
 var isSafari = (/Safari\//).test(ua) && !(/Chrome\//).test(ua);
 function translateXY(styles, x, y) {
     if (typeof transform !== 'undefined' && hasCSSTransforms) {
